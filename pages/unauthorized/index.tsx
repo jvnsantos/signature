@@ -1,14 +1,12 @@
 import React from 'react';
-import Link from 'next/link';
 import Seo from '@/shared/layout-components/seo/seo';
 import { Col, Row } from 'react-bootstrap';
 
-const Error403 = () => {
+const Unauthorized = () => {
 
   return (
-
     <div >
-      <Seo title="error-404" />
+      <Seo title="Não autorizado" />
       <Row className="authentication coming-soon mx-0 justify-content-center">
         <span className="sprite sprite-1" />
         <span className="sprite sprite-2" />
@@ -32,13 +30,11 @@ const Error403 = () => {
             </div>
           </div>
         </Col>
-
       </Row>
     </div>
-
   );
 };
 
-Error403.layout = "ErrorPagesLayout";
+Unauthorized.layout = "ErrorPagesLayout";
 
-export default Error403;
+export default Unauthorized;

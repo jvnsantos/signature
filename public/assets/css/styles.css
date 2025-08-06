@@ -43243,4 +43243,10 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+html,
+body {
+  overflow: hidden;
+  height: 100%;
+}
 /* END CUSTOM AREA */
