@@ -14,7 +14,7 @@ const ContentLayout = ({ children }: ContentLayouttProps) => {
         <div>
           <div className="">
             <Header />
-            <div className="main-content app-content mt-5">
+            <div className="mt-5">
               <div className="container-fluid mt-3">
                 {children}
               </div>
