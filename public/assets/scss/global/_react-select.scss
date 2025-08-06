@@ -1,0 +1,189 @@
+ /*START:- REACT-SELECT */
+ .Select2__single-value img {
+   width: 30px !important;
+   height: 30px !important;
+   border-radius: 50%;
+ }
+
+ .basic-multi-select1 {
+   .Select2__option img {
+     width: 30px !important;
+     height: 30px !important;
+     border-radius: 50%;
+   }
+ }
+
+ .Select2__multi-value {
+   background-color: var(--primary-color) !important;
+   color: #fff !important;
+ }
+
+ .Select2__dropdown-indicator:after {
+   content: "";
+   height: 0;
+   width: 0;
+   border-style: solid;
+   border-color: var(--text-muted) transparent transparent !important;
+   border-width: 5px;
+   position: absolute;
+   right: 11.5px;
+   top: 50%;
+   margin-top: -2.5px;
+   pointer-events: none;
+ }
+
+ // .default .Select2__multi-value__label {
+ //   padding: 0.025rem 0.625rem!important;
+ //   background-color: var(--primary-color)!important;
+ //   color: #fff!important;
+ // }
+
+ .Select2__control,
+ .Select2__menu {
+   background-color: var(--form-control-bg) !important;
+   border-color: var(--default-border) !important;
+ }
+
+ .react-select__control {
+   background-color: var(--form-control-bg) !important;
+   border-color: var(--default-border) !important;
+   box-shadow: none !important;
+ }
+
+ .Select-badge {
+   .react-select__multi-value__label {
+     font-size: 13px;
+     border-radius: .375rem !important;
+     padding: 0.188rem 0.625rem !important;
+   }
+ }
+
+ .Select2__multi-value__label {
+   color: #fff !important;
+ }
+
+ .Select2__indicator-separator,
+ .Select2__indicator.Select2__dropdown-indicator svg {
+   display: none;
+ }
+
+ .Select2__menu {
+
+   div,
+   li,
+   .Select2__single-value {
+
+     &.active,
+     &:focus {
+       .Select2__option--is-selected {
+         background: rgb(var(--primary-rgb)) !important;
+         color: #fff !important;
+       }
+     }
+   }
+ }
+
+//  .Select2__option--is-selected,
+//  .Select2__option--is-focused {
+//    background: var(--custom-white) !important;
+//    color: var(--default-text-color) !important;
+//  }
+
+ .Select2__option:hover {
+   background: var(--primary-color) !important;
+ }
+
+ .Select2__option:hover {
+   color: #fff !important;
+   background-color: var(--primary-color) !important;
+ }
+
+ .Select2__input-container,
+ .Select2__single-value {
+   color: var(--default-text-color) !important;
+ }
+
+ .Select2__placeholder {
+   color: var(--default-text-color) !important;
+ }
+
+ .Select2__input-container {
+   color: var(--default-text-color) !important;
+ }
+
+ .Select2__menu {
+   margin-top: 0px !important;
+   border: var(--default-border) !important;
+   z-index: 99999 !important;
+
+ }
+
+ .react-select__multi-value__label {
+   color: #fff !important;
+ }
+
+ .Select2__single-value img {
+   width: 30px !important;
+   height: 30px !important;
+   border-radius: 50%;
+ }
+
+ .basic-multi-select1 {
+   .Select2__option img {
+     width: 30px !important;
+     height: 30px !important;
+     border-radius: 50%;
+   }
+ }
+
+ .Select2__multi-value {
+   background-color: var(--primary-color) !important;
+   color: #fff !important;
+ }
+
+ .Select2__dropdown-indicator:after {
+   content: "";
+   height: 0;
+   width: 0;
+   border-style: solid;
+   border-color: var(--text-muted) transparent transparent !important;
+   border-width: 5px;
+   position: absolute;
+   right: 11.5px;
+   top: 50%;
+   margin-top: -2.5px;
+   pointer-events: none;
+ }
+
+ .Select2__control,
+ .Select2__menu {
+   background-color: var(--form-control-bg) !important;
+   border-color: var(--default-border) !important;
+ }
+
+ .react-select__control {
+   background-color: var(--form-control-bg) !important;
+   border-color: var(--default-border) !important;
+   box-shadow: none !important;
+ }
+
+ .Select-badge {
+   .react-select__multi-value__label {
+     font-size: 13px;
+     border-radius: .375rem !important;
+     padding: 0.188rem 0.625rem !important;
+   }
+ }
+
+ .Select2__control {
+   .Select2__option:hover {
+     background-color: var(--primary-color) !important;
+   }
+ }
+
+ .Select2__option.Select2__option--is-focused {
+   background-color: var(--primary-color) !important;
+   color: #fff;
+ }
+
+ /*END:- REACT-SELECT */

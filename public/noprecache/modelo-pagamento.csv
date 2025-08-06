@@ -1,0 +1,2 @@
+idExterno,notaFiscal,cpfCnpj,titulo,descricao,valor,dataVencimento,recebimentoPix,existeJuros,modalidadeDeJuros,jurosValor,existeMulta,modalidadeDeMulta,multaValor,diasDeProrrogacao,formaPagamento,metodoPagamento,motoristaCode,mapa
+TESTEIMPORTNEWCSV,NF202312514,67851646057,Titulo Exemplo,Descrição Exemplo,10.23,2025-01-30,true,true,PERCENTAGE_PER_DAY_CALENDAR_DAYS,0.33,true,PERCENT,5,7,AVISTA,PIX,ABC123,123456

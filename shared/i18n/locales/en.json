@@ -1,0 +1,121 @@
+{
+  "GENERAL": {
+    "TOTAL": "Total",
+    "CHARGES": "Cobranças",
+    "LAST": "últimos",
+    "DAYS": "dias",
+    "DAY": "dias",
+    "RESULT_FOUNDS": "resultados encontrados",
+    "CLEAN_FILTER": "Limpar filtros",
+    "UPDATE": "Atualizar",
+    "DETAILS": "Detalhes"
+  },
+  "STATUS": {
+    "SINGULAR": {
+      "PAID": "Pago",
+      "PENDING": "Pendente",
+      "CANCEL": "Cancelado",
+      "BLOCK": "Bloqueado",
+      "EXPIRED": "Expirado",
+      "STOP": "Pausado",
+      "GROUPED": "Agrupado",
+      "RETURNED": "Devolvido",
+      "ACTIVE": "Ativo",
+      "INACTIVE": "Inativo",
+      "FINISHED": "Finalizado",
+      "PROTESTED": "Protestado",
+      "SENT_TO_PROTEST": "Enviado para protesto",
+      "NOTFOUND": "Não disponivel"
+    },
+    "PENDING": "Pendentes",
+    "CANCEL": "Cancelados",
+    "RETURNED": "Devolvidos",
+    "GROUPED": "Agrupados",
+    "EXPIRED": "Expirados",
+    "PROTESTED": "Protestados",
+    "DUE_DATE_TO": "Vencido de",
+    "DUE_DATE_FROM": "Vencido até",
+    "PAID_DATE_TO": "Pago de",
+    "PAID_DATE_FROM": "Pago até",
+    "CREATED_DATE_TO": "Criado de",
+    "CREATED_DATE_FROM": "Criado até",
+    "ALL": "Todos",
+    "OVERDUE": "Vencido",
+    "OVERDUES": "Vencidos",
+    "PAID": "Pago",
+    "PAIDS": "Pagos",
+    "TO_DUE": "A vencer"
+  },
+  "CHARGES_PAGE": {
+    "TITLE": "Minhas Cobranças",
+    "WAIT": "Aguarde enquanto geramos o arquivo",
+    "ACTIONS": {
+      "LABEL": {
+        "EXPORT": "Exportar",
+        "EXPORT_XLSX": "Exportar tudo como XLSX",
+        "EXPORT_PDF": "Exportar tudo como PDF"
+      }
+    },
+    "FILTERS": {
+      "LABEL": {
+        "SEARCH": "Pesquisar",
+        "STATUS": "Status",
+        "INVOICE": "Nota fiscal",
+        "PAYMENT_SHAPE": "Forma de pagamento",
+        "PAYMENT_METHOD": "Método de pagamento",
+        "MAP_CODE": "Cód. Mapa"
+      },
+      "PLACE_HOLDER": {
+        "SEARCH": "Nome, documento ou telefone",
+        "INVOICE": "Nota fiscal",
+        "MAP_CODE": "Digite o código do mapa"
+      }
+    },
+    "TABLE": {
+      "HEADERS": {
+        "COL_1": "Nome",
+        "COL_2": "Documento",
+        "COL_3": "Nota fiscal",
+        "COL_4": "Rota",
+        "COL_5": "Cód. Motorista",
+        "COL_6": "Valor",
+        "COL_7": "Vencimento",
+        "COL_8": "Pago em",
+        "COL_9": "Criado em",
+        "COL_10": "Status"
+      }
+    }
+  },
+  "DASHBOARD_PAGE": {
+    "DAYS": "dias",
+    "TITLE_RESUME_OVERVIEW": "Resumo Geral",
+    "TITLE_RESUME_DUEDATE": "Resumo por vencimento",
+    "TITLE_RESUME_PAID": "Resumo por recebimento",
+    "SERIES_NAME": { "DUEDATE": "Cobranças" },
+    "OVERVIEW_ITEMS": {
+      "TOTAL_CLIENT": "Total de clientes",
+      "TOTAL_CHARGES": "Total de cobranças",
+      "TOTAL_RECIVED": "Total recebido",
+      "TOTAL_PENDING": "Total pendente"
+    }
+  },
+  "CONFIG_PAGE": {
+    "PROMAX_INTEGRATION": {
+      "HEADER": "ProMAX Integration",
+      "TITLE_CREATE": "Integration with ProMAX is essential for automated operation. Enable this setting so that billing generation and clearance occur seamlessly between systems.",
+      "TITLE_EDIT": "Integration with ProMAX is essential for automated operation. Any change to this setting directly affects the integrated workflows between systems for billing generation and clearance.",
+      "BRANCH": "Branch",
+      "HOLDER": "Issuing bank",
+      "METHODS": "Payment method",
+      "CANCEL": "Cancel",
+      "CREATE_SUBMIT": "Enable integration",
+      "EDIT_WARNING": "Any change to this setting directly affects the integrated workflows between systems for billing generation and clearance.",
+      "EDIT_SUBMIT": "Update data",
+      "EDIT_BUTTON": "Edit",
+      "VINCULATE_BUTTON": "Vincular",
+      "INPUT_LABEL_1": "Issuing bank – immediate payment",
+      "INPUT_LABEL_2": "Issuing bank – deferred payment",
+      "INPUT_LABEL_3": "Payment method"
+    }
+  }
+}

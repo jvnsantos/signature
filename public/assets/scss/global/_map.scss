@@ -1,0 +1,28 @@
+
+ /*START:- MAPS */
+#vector-map {
+    svg {
+      width: 100% !important;
+      height: 337px !important;
+    }
+  }
+  #russia-map,
+  #us-map,
+  #marker-image-map,
+  #lines-map,
+  #marker-map {
+    svg {
+      width: 100% !important;
+      height: 310px !important;
+    }
+  }
+  #marker-map {
+    svg {
+      width: 100% !important;
+      height: 360px !important;
+    }
+  }
+  #users-map .controls .btn svg{
+    color:  var(--text-muted);
+  }
+   /*END:- MAPS */

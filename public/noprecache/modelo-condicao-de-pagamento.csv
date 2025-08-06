@@ -1,0 +1,12 @@
+codigo;metodoPagamento;descricao
+1;AVISTA;VENDA A VISTA       
+2;AVISTA;DINHEIRO            
+5;AVISTA;CREDITO EM CONTA    
+301;AVISTA;BOL 7 AD            
+302;APRAZO;BOL 8 ADF           
+303;APRAZO;BOL 5 AD            
+304;APRAZO;BOL 1D AD           
+305;APRAZO;BOL 3 AD            
+306;AVISTA;BOL SESC            
+307;AVISTA;BOL 12 *AD          
+308;AVISTA;CREDITO EM CONTA    

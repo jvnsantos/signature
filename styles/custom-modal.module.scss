@@ -1,0 +1,10 @@
+.custom_modal {
+  max-width: 600px;
+  .modal-dialog {
+    // max-width: 900px !important;
+    width: 100%;
+  }
+  .modal-content {
+    border-radius: 8px;
+  }
+}
