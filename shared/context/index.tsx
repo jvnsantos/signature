@@ -1,11 +1,11 @@
 import React from 'react';
-import UserProvider from './UserContext';
+import GlobalProvider from './global-context';
 
 
 export const ContextProvider = ({ children }: any) => {
   return (
-    <UserProvider>
+    <GlobalProvider>
       {children}
-    </UserProvider>
+    </GlobalProvider>
   );
 };

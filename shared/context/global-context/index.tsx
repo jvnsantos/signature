@@ -1,0 +1,58 @@
+import {
+  createContext,
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useState,
+} from "react";
+import { Client, Company, Delivery, Invoice } from "./interfaces";
+
+export interface GlobalContextData {
+  setClient: Dispatch<SetStateAction<Client>>;
+  client: Client;
+
+  setCompany: Dispatch<SetStateAction<Company>>;
+  company: Company;
+
+  setDelivery: Dispatch<SetStateAction<Delivery>>;
+  delivery: Delivery;
+
+  setInvoice: Dispatch<SetStateAction<Invoice>>;
+  invoice: Invoice;
+
+  showHeader: boolean;
+  setShowHeader: Dispatch<SetStateAction<boolean>>
+
+}
+
+const GlobalContext = createContext<GlobalContextData>({} as GlobalContextData);
+
+const GlobalProvider = ({ children }: any) => {
+  const [client, setClient] = useState({} as Client);
+  const [company, setCompany] = useState({} as Company);
+  const [delivery, setDelivery] = useState({} as Delivery);
+  const [invoice, setInvoice] = useState({} as Invoice);
+  const [showHeader, setShowHeader] = useState<boolean>(false)
+
+  return (
+    <GlobalContext.Provider
+      value={{
+        showHeader,
+        setShowHeader,
+        client,
+        setClient,
+        company,
+        setCompany,
+        delivery,
+        setDelivery,
+        invoice,
+        setInvoice
+      }}
+    >
+      {children}
+    </GlobalContext.Provider>
+  );
+};
+
+export const useGlobalContext = () => useContext(GlobalContext);
+export default GlobalProvider;

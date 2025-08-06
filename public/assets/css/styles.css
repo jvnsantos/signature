@@ -1,5 +1,6 @@
 @charset "UTF-8";
 
+@import "leaflet/dist/leaflet.css";
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&display=swap");
 @import "./custom-styles.css";
 @import "./custom-btn.css";
@@ -26532,7 +26533,7 @@ th.gridjs-th-fixed {
 }
 .coming-soon::before {
   content: "";
-  background-color:  #f1f1f1;
+  background-color: #f1f1f1;
   /* background: linear-gradient(
     to right,
     var(--primary03) 0%,
@@ -26557,25 +26558,25 @@ th.gridjs-th-fixed {
 
 /* Posições únicas */
 .sprite-1 {
-   opacity: 0.08;
+  opacity: 0.08;
   top: 10%;
   left: 10%;
   animation-delay: 0s;
 }
 .sprite-2 {
-   opacity: 0.08;
+  opacity: 0.08;
   top: 25%;
   left: 70%;
   animation-delay: 2s;
 }
 .sprite-3 {
-   opacity: 0.08;
+  opacity: 0.08;
   top: 65%;
   left: 60%;
   animation-delay: 4s;
 }
 .sprite-4 {
-   opacity: 0.08;
+  opacity: 0.08;
   top: 80%;
   left: 20%;
   animation-delay: 6s;
@@ -26588,11 +26589,11 @@ th.gridjs-th-fixed {
   }
   50% {
     transform: translateY(-20px) scale(1.2);
-      opacity: 0.08;
+    opacity: 0.08;
   }
   100% {
     transform: translateY(0px) scale(1);
-   opacity: 0.08;
+    opacity: 0.08;
   }
 }
 
@@ -43244,6 +43245,39 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
+.after-green,
+.after-blue {
+  position: relative;
+}
+
+.after-green::after,
+.after-blue::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.2rem; /* distância do topo */
+  bottom: 0;
+  width: 4px;
+  border-radius: 4px;
+}
+
+.after-green::after {
+  background-color: #28a745; /* verde */
+}
+
+.after-blue::after {
+  background-color: #007bff; /* azul */
+}
+
+.f2f2f2{
+  color: #f2f2f2 !important;
+}
+.linear-header-bg {
+  background: linear-gradient(to right, var(--primary-color) 0%, #1a5adb 100%);
+}
+.text-wrap{
+   text-wrap: wrap;
+}
 html,
 body {
   overflow: hidden;
