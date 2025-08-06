@@ -43280,7 +43280,6 @@ input[type="number"] {
 }
 html,
 body {
-  overflow: hidden;
   height: 100%;
 }
 /* END CUSTOM AREA */

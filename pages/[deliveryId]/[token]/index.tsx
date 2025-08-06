@@ -62,7 +62,7 @@ const DeliveryPage = () => {
           <Row className="text-center">
             <Col>
               <h4 className="fs-4 ">
-                Bem-vindos!
+                Bem-vindo!
               </h4>
             </Col>
             <Row>
@@ -140,7 +140,7 @@ const DeliveryPage = () => {
       </Card>
 
 
-      <Row>
+      <Row className="mb-3">
         <Col xs="auto" className="d-flex align-items-center justify-content-center w-100">
           <CustomButton
             className="shadow-light text-wrap py-4"
