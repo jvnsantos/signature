@@ -1,0 +1,18 @@
+.custom-alert {
+  padding: 8px 12px;
+  display: flex;
+  gap: 5.33px;
+  border-radius: 4px;
+}
+
+.alert-theme-attention {
+  color: #665114;
+  background-color: #fff3cc;
+  border: 1px solid #ffe69a;
+}
+
+.alert-theme-error {
+  color: #4d0f13;
+  background-color: #f6d8da;
+  border: 1px solid #ecb1b5;
+}

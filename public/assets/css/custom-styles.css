@@ -1,0 +1,8 @@
+:root {
+  --toast-bg-success: #d2f7e3;
+}
+
+/* TOASTS */
+.toast-bg-success {
+  background-color: var(--toast-bg-success);
+}

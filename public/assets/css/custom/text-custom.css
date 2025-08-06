@@ -1,0 +1,16 @@
+.text-h3 {
+  font-weight: 700;
+  font-size: 16px;
+  font-style: bold;
+}
+
+.text-body {
+  font-weight: 400;
+  font-size: 14px;
+  color: #212529;
+}
+
+.border-dashed-dark{
+  border: 2px dashed rgba(var(--primary-rgb), 0.3);
+  border-radius: 9px;
+}
