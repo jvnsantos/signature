@@ -1,24 +1,14 @@
-import { Fragment } from "react";
-import {
-  Col,
-  Container,
-  Row,
-  Tab
-} from "react-bootstrap";
+import { useRouter } from "next/router";
+import { Fragment, useEffect } from "react";
 
 const Home = () => {
+  const route = useRouter()
 
+  useEffect(()=>{
+    route.push('/unauthorized')
+  },[])
   return (
     <Fragment>
-      <Container className="container-lg">
-        <Row className="justify-content-center authentication authentication-basic align-items-center h-100">
-          <Col xxl={4} xl={5} lg={6} md={6} sm={8} className="col-12">
-            <Tab.Container id="left-tabs-example" defaultActiveKey="nextjs">
-              Bem vindo
-            </Tab.Container>
-          </Col>
-        </Row>
-      </Container>
     </Fragment>
   );
 };
