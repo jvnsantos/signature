@@ -1,4 +1,5 @@
 // /pages/[deliveryId]/[token]/index.tsx
+'use client'
 import API_GET_DELIVERY from "@/pages/api/delivery";
 import CustomButton from "@/shared/components/custom-button";
 import LoadingPage from "@/shared/components/loading-page";
@@ -13,14 +14,14 @@ import DriverGeolocalization from "./localizacao-motorista";
 import ListPdfDocument from "./listagem-pdf";
 import DropAttachments from "./envio-anexos";
 import SignatureCollect from "./assinatura";
+import RenderPdfViewer from "./pdf-viewer";
 
 const DeliveryPage = () => {
   const router = useRouter();
-  const { setClient, setCompany, setDelivery, setInvoice, client, company, setShowHeader, showHeader } = useGlobalContext()
+  const { setClient, setCompany, setDelivery, setInvoice, client, company, setShowHeader, showHeader, currentStep, setCurrentStep } = useGlobalContext()
   const { deliveryId, token } = router.query;
   const [showMap, setShowMap] = useState(false);
   const [authorized, setAuthorized] = useState<boolean | null>(null);
-  const [currentStep, setCurrentStep] = useState(0);
 
   const validate = async () => {
     try {
@@ -36,7 +37,7 @@ const DeliveryPage = () => {
         callBackError: () => { router.replace("/unauthorized"); },
         callBackSuccess: (response) => {
           const data = response.data
-          setInvoice(data.invoice)
+          setInvoice(data.invoices)
           setCompany(data.company)
           setDelivery(data.delivery)
           setClient(data.client)
@@ -132,9 +133,9 @@ const DeliveryPage = () => {
         );
       case 3:
         return (
-          <Card className="shadow-light">
-            <Card.Body>
-              <DropAttachments handleNext={() => setCurrentStep(4)} />
+          <Card className="shadow-light p-0">
+            <Card.Body className="p-0">
+              <RenderPdfViewer handleBack={() => setCurrentStep(2)} />
             </Card.Body>
           </Card>
         );
@@ -142,11 +143,19 @@ const DeliveryPage = () => {
         return (
           <Card className="shadow-light">
             <Card.Body>
-              <SignatureCollect handleNext={() => setCurrentStep(5)} />
+              <DropAttachments handleNext={() => setCurrentStep(5)} />
             </Card.Body>
           </Card>
         );
       case 5:
+        return (
+          <Card className="shadow-light">
+            <Card.Body>
+              <SignatureCollect handleNext={() => setCurrentStep(6)} />
+            </Card.Body>
+          </Card>
+        );
+      case 6:
         return (
           <Card className="shadow-light">
             <Card.Body>

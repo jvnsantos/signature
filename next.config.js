@@ -12,6 +12,32 @@ const nextConfig = {
     loader: "imgix",
     path: "/",
   },
+  webpack: (config, { isServer }) => {
+    // Configuração para react-pdf
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      canvas: false,
+    };
+    
+    // Ignorar canvas e outras dependências problemáticas no servidor
+    if (isServer) {
+      config.externals = config.externals || [];
+      config.externals.push('canvas', 'pdfjs-dist');
+    }
+
+    // Configurações adicionais para lidar com módulos ESM
+    config.module.rules.push({
+      test: /\.mjs$/,
+      include: /node_modules/,
+      type: 'javascript/auto',
+    });
+
+    return config;
+  },
+  experimental: {
+    esmExternals: 'loose',
+  },
+  transpilePackages: ['react-pdf'],
 };
 
 module.exports = nextConfig;

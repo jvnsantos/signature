@@ -17,12 +17,17 @@ export interface GlobalContextData {
   setDelivery: Dispatch<SetStateAction<Delivery>>;
   delivery: Delivery;
 
-  setInvoice: Dispatch<SetStateAction<Invoice>>;
-  invoice: Invoice;
+  setInvoice: Dispatch<SetStateAction<Invoice[]>>;
+  invoice: Invoice[];
 
   showHeader: boolean;
   setShowHeader: Dispatch<SetStateAction<boolean>>
 
+  selectedInvoice: string
+  setSelectedInvoice: Dispatch<SetStateAction<string>>
+
+  currentStep: number;
+  setCurrentStep: Dispatch<SetStateAction<number>>
 }
 
 const GlobalContext = createContext<GlobalContextData>({} as GlobalContextData);
@@ -31,8 +36,10 @@ const GlobalProvider = ({ children }: any) => {
   const [client, setClient] = useState({} as Client);
   const [company, setCompany] = useState({} as Company);
   const [delivery, setDelivery] = useState({} as Delivery);
-  const [invoice, setInvoice] = useState({} as Invoice);
+  const [invoice, setInvoice] = useState([] as Invoice[]);
   const [showHeader, setShowHeader] = useState<boolean>(false)
+  const [selectedInvoice, setSelectedInvoice] = useState<string>('')
+  const [currentStep, setCurrentStep] = useState<number>(0)
 
   return (
     <GlobalContext.Provider
@@ -46,7 +53,11 @@ const GlobalProvider = ({ children }: any) => {
         delivery,
         setDelivery,
         invoice,
-        setInvoice
+        setInvoice,
+        selectedInvoice,
+        setSelectedInvoice,
+        currentStep,
+        setCurrentStep
       }}
     >
       {children}

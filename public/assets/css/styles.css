@@ -3,6 +3,7 @@
 @import "leaflet/dist/leaflet.css";
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&display=swap");
 @import "./custom-styles.css";
+@import "./pdf-viwer.css";
 @import "./custom-btn.css";
 @import "./custom/text-custom.css";
 @import "./custom/alert-custom.css";
