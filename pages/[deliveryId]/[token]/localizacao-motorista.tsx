@@ -78,9 +78,10 @@ const DriverGeolocalization = () => {
 
       <div className="mt-5">
         <CustomButton
+          theme={address ? 'secundary' : 'primary'}
           handleClick={handleGetLocation}
           loading={loading}
-          label={'Marcar'}
+          label={address ? 'Marcar novamente' : 'Marcar'}
           title="Marcar localização"
           icon={<i className="bi bi-geo-alt-fill"></i>}
         />
@@ -100,10 +101,20 @@ const DriverGeolocalization = () => {
                 src={mapProps}
                 width="100%"
                 height="100%"
-                style={{ border: "none", minHeight: "400px" }}
+                style={{ border: "none", minHeight: "250px" }}
                 loading="lazy"
               ></iframe>
             }
+          </div>
+
+          <div className="mt-3">
+            <CustomButton
+              handleClick={() => { }}
+              loading={loading}
+              label={'Próximo'}
+              title="Próximo"
+              icon={<i className="bi bi-geo-alt-fill"></i>}
+            />
           </div>
         </Fragment>
       )}
