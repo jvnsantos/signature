@@ -3473,6 +3473,11 @@ lru-cache@^5.1.1:
   dependencies:
     yallist "^3.0.2"
 
+lucide-react@^0.537.0:
+  version "0.537.0"
+  resolved "https://registry.yarnpkg.com/lucide-react/-/lucide-react-0.537.0.tgz#2752280dfd51e95456c35813837bc9e0b190303b"
+  integrity sha512-VxWsdxBGeFnlC+HwMg/l08HptN4YRU9o/lRog156jOmRxI1ERKqN+rJiNY/mPcKAdWdM0UbyO8ft1o0jq69SSQ==
+
 memoize-one@^6.0.0:
   version "6.0.0"
   resolved "https://registry.npmjs.org/memoize-one/-/memoize-one-6.0.0.tgz"

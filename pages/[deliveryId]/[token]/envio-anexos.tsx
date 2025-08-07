@@ -1,180 +1,270 @@
-import React, { useRef, useState } from "react";
-import { Modal, Button, Form, Row, Col, Card } from "react-bootstrap";
+import React, { useState } from 'react';
+import { Camera, X } from 'lucide-react';
+import CustomButton from '@/shared/components/custom-button';
 
-type FotoInfo = {
+type Photo = {
   id: number;
-  url: string;
-  descricao: string;
-  observacao: string;
+  image: string;
+  description: string;
+  type: string;
+  observations: string;
 };
 
-const tiposFoto = [
-  "Fachada de estabelecimento",
-  "Fotografia do recebedor (solicitante)",
-  "Fotografia da carga",
-  "Fotografia recebedor (Não solicitante)",
-  "Outros motivos",
-];
-
 type Props = {
-  handleNext: () => void
-}
-const ColetaFotos = ({ }: Props) => {
-  const [fotos, setFotos] = useState<FotoInfo[]>([]);
-  const [showModal, setShowModal] = useState(false);
-  const [tipoSelecionado, setTipoSelecionado] = useState("");
-  const [observacao, setObservacao] = useState("");
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [cameraAtiva, setCameraAtiva] = useState(false);
+  handleNext: () => void;
+};
 
-  const abrirModal = () => {
-    setTipoSelecionado("");
-    setObservacao("");
-    setShowModal(true);
+const PhotoCollector = ({ handleNext }: Props) => {
+  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [showModal, setShowModal] = useState(false);
+  const [currentPhoto, setCurrentPhoto] = useState<string | null>(null);
+  const [photoType, setPhotoType] = useState('');
+  const [observations, setObservations] = useState('');
+  const [error, setError] = useState('');
+
+  const photoTypes = [
+    "Fachada de estabelecimento",
+    "Fotografia do recebedor (solicitante)",
+    "Fotografia da carga",
+    "Fotografia recebedor (Não solicitante)",
+    "Outros motivos"
+  ];
+
+  const handleCameraCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event: ProgressEvent<FileReader>) => {
+        if (event.target?.result) {
+          setCurrentPhoto(event.target.result as string);
+          setShowModal(true);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+    // Limpa o input para permitir selecionar a mesma foto novamente se necessário
+    e.target.value = '';
   };
 
-  const iniciarCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        setCameraAtiva(true);
-      }
-    } catch (err) {
-      alert("Erro ao acessar a câmera: " + err);
+  const handleSavePhoto = () => {
+    if (!photoType) {
+      setError('Por favor, selecione o tipo da foto');
+      return;
+    }
+
+    if (!currentPhoto) {
+      setError('Erro ao processar a foto');
+      return;
+    }
+
+    const description = photoType + (observations ? ` - ${observations}` : '');
+
+    const newPhoto: Photo = {
+      id: Date.now(),
+      image: currentPhoto,
+      description: description,
+      type: photoType,
+      observations: observations
+    };
+
+    setPhotos([...photos, newPhoto]);
+    handleCloseModal();
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setCurrentPhoto(null);
+    setPhotoType('');
+    setObservations('');
+    setError('');
+  };
+
+  const handleRemovePhoto = (photoId: number) => {
+    setPhotos(photos.filter(photo => photo.id !== photoId));
+  };
+
+  const canAddPhoto = photos.length < 6;
+  const hasMinimumPhotos = photos.length >= 2;
+
+  const handleContinue = () => {
+    if (hasMinimumPhotos) {
+      handleNext();
     }
   };
 
-  const capturarFoto = () => {
-    if (!canvasRef.current || !videoRef.current) return;
-    const ctx = canvasRef.current.getContext("2d");
-    if (!ctx) return;
-    canvasRef.current.width = videoRef.current.videoWidth;
-    canvasRef.current.height = videoRef.current.videoHeight;
-    ctx.drawImage(videoRef.current, 0, 0);
-    const url = canvasRef.current.toDataURL("image/jpeg");
-
-    const novaFoto: FotoInfo = {
-      id: Date.now(),
-      url,
-      descricao: tipoSelecionado,
-      observacao,
-    };
-    setFotos((prev) => [...prev, novaFoto]);
-
-    pararCamera();
-    setShowModal(false);
-  };
-
-  const pararCamera = () => {
-    const stream = videoRef.current?.srcObject as MediaStream;
-    stream?.getTracks().forEach((track) => track.stop());
-    setCameraAtiva(false);
-  };
-
-  const removerFoto = (id: number) => {
-    setFotos((prev) => prev.filter((foto) => foto.id !== id));
-  };
-
-  const podeAvancar = fotos.length >= 2;
-
   return (
-    <div className="p-3">
-      <h5>TESTE DE CAMERA</h5>
+    <div className="max-w-md mx-auto p-4 bg-gray-50 min-h-screen">
+      <div className="bg-white rounded-lg shadow-sm p-4">
+        <h2 className="text-xl font-semibold text-center mb-4">Captura de Fotos</h2>
 
-      <Row>
-        {fotos.map((foto) => (
-          <Col xs={6} key={foto.id} className="mb-3 position-relative">
-            <Card>
-              <Card.Img variant="top" src={foto.url} />
-              <Button
-                variant="danger"
-                size="sm"
-                style={{ position: "absolute", top: "5px", right: "5px", borderRadius: "50%" }}
-                onClick={() => removerFoto(foto.id)}
-              >
-                X
-              </Button>
-              <Card.Body>
-                <Card.Text style={{ fontSize: "0.8rem" }}>
-                  {foto.descricao} - {foto.observacao}
-                </Card.Text>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
+        {!hasMinimumPhotos && (
+          <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-3 py-2 rounded mb-4 text-sm">
+            ⚠️ Mínimo de 2 fotos obrigatórias com descrição
+          </div>
+        )}
 
-      {fotos.length < 6 && (
-        <Button variant="primary" onClick={abrirModal}>
-          Adicionar Foto
-        </Button>
-      )}
+        {/* Grid de Fotos */}
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          {photos.map((photo) => (
+            <div key={photo.id} className="relative bg-white rounded-lg shadow-sm overflow-hidden">
+              <div className="relative aspect-[4/3]">
+                <img
+                  src={photo.image}
+                  alt="Foto capturada"
+                  className="w-full h-full object-cover"
+                />
+                <button
+                  onClick={() => handleRemovePhoto(photo.id)}
+                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
+                  type="button"
+                  aria-label="Remover foto"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+              <div className="p-2">
+                <p className="text-xs text-gray-600 leading-tight">
+                  {photo.description}
+                </p>
+              </div>
+            </div>
+          ))}
 
-      <div className="mt-3">
-        <Button variant="success" disabled={!podeAvancar} onClick={() => alert("Enviar fotos")}>
-          Prosseguir
-        </Button>
-      </div>
-
-      {/* Modal */}
-      <Modal
-        show={showModal}
-        onHide={() => {
-          pararCamera();
-          setShowModal(false);
-        }}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Adicionar Foto</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form.Group className="mb-3">
-            <Form.Label>Tipo de Foto</Form.Label>
-            <Form.Select
-              value={tipoSelecionado}
-              onChange={(e) => setTipoSelecionado(e.target.value)}
-            >
-              <option value="">Selecione...</option>
-              {tiposFoto.map((tipo, idx) => (
-                <option key={idx} value={tipo}>
-                  {tipo}
-                </option>
-              ))}
-            </Form.Select>
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Observação</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={2}
-              value={observacao}
-              onChange={(e) => setObservacao(e.target.value)}
-            />
-          </Form.Group>
-
-          {!cameraAtiva && (
-            <Button variant="secondary" onClick={iniciarCamera}>
-              Abrir Câmera
-            </Button>
-          )}
-
-          {cameraAtiva && (
-            <div>
-              <video ref={videoRef} autoPlay playsInline style={{ width: "100%" }} />
-              <Button className="mt-2" variant="primary" onClick={capturarFoto}>
-                Capturar Foto
-              </Button>
+          {/* Botão para adicionar nova foto */}
+          {canAddPhoto && (
+            <div className="relative">
+              <div className="aspect-[4/3] border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer">
+                <Camera size={32} className="text-gray-400 mb-2" />
+                <span className="text-xs text-gray-500 text-center px-2">Adicionar Foto</span>
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                capture={true}
+                onChange={handleCameraCapture}
+                className="absolute inset-0 opacity-0 cursor-pointer"
+                aria-label="Capturar foto"
+              />
             </div>
           )}
+        </div>
 
-          <canvas ref={canvasRef} style={{ display: "none" }} />
-        </Modal.Body>
-      </Modal>
+        {/* Contador de fotos */}
+        <div className="text-center mb-4">
+          <span className="text-sm text-gray-500">
+            {photos.length} de 6 fotos • {hasMinimumPhotos ? '✅ Mínimo atingido' : 'Mín. 2 fotos'}
+          </span>
+        </div>
+      </div>
+
+      {/* Modal para configurar a foto */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-sm w-full max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="text-lg font-semibold">Configurar Foto</h3>
+              <button
+                onClick={handleCloseModal}
+                className="text-gray-400 hover:text-gray-600"
+                type="button"
+                aria-label="Fechar modal"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-4">
+              {currentPhoto && (
+                <div className="mb-4">
+                  <img
+                    src={currentPhoto}
+                    alt="Preview da foto"
+                    className="w-full h-48 object-cover rounded-lg"
+                  />
+                </div>
+              )}
+
+              {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded mb-4 text-sm">
+                  {error}
+                </div>
+              )}
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Tipo da Foto *
+                </label>
+                <select
+                  value={photoType}
+                  onChange={(e) => setPhotoType(e.target.value)}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                >
+                  <option value="">Selecione o tipo da foto</option>
+                  {photoTypes.map((type, index) => (
+                    <option key={index} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Observações
+                </label>
+                <textarea
+                  rows={3}
+                  value={observations}
+                  onChange={(e) => setObservations(e.target.value)}
+                  placeholder="Adicione observações sobre a foto (opcional)"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                />
+              </div>
+
+              {photoType && (
+                <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                  <div className="text-sm text-gray-600">
+                    <strong>Descrição final:</strong>
+                  </div>
+                  <div className="text-sm text-gray-800 mt-1">
+                    {photoType}{observations ? ` - ${observations}` : ''}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-2 p-4 border-t">
+              <button
+                onClick={handleCloseModal}
+                className="flex-1 px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                type="button"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleSavePhoto}
+                className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                type="button"
+              >
+                Salvar Foto
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Botão customizado para continuar */}
+      <div className="mt-4">
+        <CustomButton
+          title="Próximo"
+          label="próximo"
+          handleClick={handleContinue}
+          disable={!hasMinimumPhotos}
+        />
+      </div>
     </div>
   );
-}
+};
 
-export default ColetaFotos
+export default PhotoCollector;
