@@ -9,6 +9,7 @@ import trativeResponseUtils from "@/shared/utils/trative-response.utils";
 import { useRouter } from "next/router";
 import { Fragment, useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
+import DriverGeolocalization from "./localizacao-motorista";
 
 const DeliveryPage = () => {
   const router = useRouter();
@@ -16,6 +17,7 @@ const DeliveryPage = () => {
   const { deliveryId, token } = router.query;
   const [showMap, setShowMap] = useState(false);
   const [authorized, setAuthorized] = useState<boolean | null>(null);
+  const [currentStep, setCurrentStep] = useState(0);
 
   const validate = async () => {
     try {
@@ -46,6 +48,137 @@ const DeliveryPage = () => {
     }
   };
 
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 0:
+        return (
+          <Card className="shadow-light">
+            <Card.Body>
+              <Row className="text-center">
+                <Col>
+                  <h4 className="fs-4 ">Bem-vindo!</h4>
+                  <span className="fs-6 text-muted">Vamos iniciar o processo de entrega</span>
+                </Col>
+              </Row>
+
+              <Row className="my-4">
+                <Col>
+                  <div className="after-green px-3 py-2">
+                    <h5 className="m-0">{company?.name?.toUpperCase()}</h5>
+                    <span className="text-muted">Empresa responsável</span>
+                  </div>
+                </Col>
+              </Row>
+
+              <Row className="my-4">
+                <Col>
+                  <div className="after-blue px-3 py-2">
+                    <h5 className="m-0">{client?.name}</h5>
+                    <span className="text-muted">Cliente destinatário</span>
+                  </div>
+                </Col>
+              </Row>
+
+              <div className="d-flex flex-row gap-2">
+                <i className="bi bi-geo-alt fs-5 text-primary"></i>
+                <Row>
+                  <h5 className="pt-1">Endereço da entrega</h5>
+                  <span className="text-muted">{client?.address?.street}, {client?.address?.number ?? 'S/N'}</span>
+                  <span className="text-muted">{client?.address?.neighborhood}, {client?.address?.city}/{client?.address?.state}</span>
+                  <span className="text-muted">CEP: {client?.address?.postalCode}</span>
+                </Row>
+              </div>
+
+              <div className="mt-4 d-flex w-100 justify-content-center align-items-center gap-3">
+                <CustomButton
+                  className="shadow-light"
+                  size="l"
+                  handleClick={() => setShowMap(true)}
+                  label={'Ver no mapa'}
+                  title="Ver no mapa"
+                  icon={<i className=" fs-6 bi bi-geo"></i>}
+                  theme="secundary"
+                />
+
+                <CustomButton
+                  className="shadow-light"
+                  size="l"
+                  handleClick={() => setCurrentStep(1)}
+                  label={'Continuar'}
+                  title="Continuar"
+                />
+              </div>
+            </Card.Body>
+          </Card>
+        );
+      case 1:
+        return (
+          <Card className="shadow-light">
+            <Card.Body>
+              <DriverGeolocalization />
+            </Card.Body>
+          </Card>
+        );
+      case 2:
+        return (
+          <Card className="shadow-light">
+            <Card.Body>
+              <h4>Listagem dos PDFs</h4>
+              {/* Componente de PDFs */}
+              <CustomButton
+                handleClick={() => setCurrentStep(3)}
+                label="Continuar"
+                title="Continuar"
+                className="mt-3"
+              />
+            </Card.Body>
+          </Card>
+        );
+      case 3:
+        return (
+          <Card className="shadow-light">
+            <Card.Body>
+              <h4>Anexos</h4>
+              {/* Upload de arquivos */}
+              <CustomButton
+                handleClick={() => setCurrentStep(4)}
+                label="Continuar"
+                title="Continuar"
+                className="mt-3"
+              />
+            </Card.Body>
+          </Card>
+        );
+      case 4:
+        return (
+          <Card className="shadow-light">
+            <Card.Body>
+              <h4>Assinatura digital</h4>
+              {/* Canvas de assinatura */}
+              <CustomButton
+                title="Finalizar entrega"
+                handleClick={() => setCurrentStep(5)}
+                label="Finalizar entrega"
+                className="mt-3"
+              />
+            </Card.Body>
+          </Card>
+        );
+      case 5:
+        return (
+          <Card className="shadow-light">
+            <Card.Body>
+              <h4>Entrega concluída!</h4>
+              <p>Obrigado por utilizar nosso sistema.</p>
+            </Card.Body>
+          </Card>
+        );
+      default:
+        return null;
+    }
+  };
+
+
   useEffect(() => {
     if (!deliveryId || !token) return;
     validate();
@@ -57,104 +190,7 @@ const DeliveryPage = () => {
 
   return (
     <Fragment>
-      <Card className="shadow-light">
-        <Card.Body>
-          <Row className="text-center">
-            <Col>
-              <h4 className="fs-4 ">
-                Bem-vindo!
-              </h4>
-            </Col>
-            <Row>
-              <Col>
-                <span className="fs-6 text-muted">
-                  Vamos iniciar o processo de entrega
-                </span>
-              </Col>
-            </Row>
-          </Row>
-        </Card.Body>
-      </Card>
-
-      {/* INFOS */}
-      <Card className="shadow-light">
-        <Card.Body>
-          <Row className="mb-4">
-            <Col>
-              <div className="after-green px-3 py-2">
-                <h5 className="m-0">
-                  {company?.name?.toUpperCase()}
-                </h5>
-                <span className="text-muted">Empresa responsável</span>
-              </div>
-            </Col>
-          </Row>
-
-          <Row className="my-4">
-            <Col>
-              <div className="after-blue px-3 py-2">
-                <h5 className="m-0">
-                  {client?.name}
-                </h5>
-                <span className="text-muted">Cliente destinatário</span>
-              </div>
-            </Col>
-          </Row>
-
-          <div className="d-flex flex-row gap-2">
-            <i className="bi bi-geo-alt fs-5 text-primary"></i>
-            <Row>
-              <h5 className="pt-1">
-                Endereço da entrega
-              </h5>
-              <span className="text-muted">{client?.address?.street}, {client?.address?.number ?? 'S/N'}</span>
-              <span className="text-muted">{client?.address?.neighborhood}, {client?.address?.city}/{client?.address?.state}</span>
-              <span className="text-muted">CEP: {client?.address?.postalCode}</span>
-
-
-            </Row>
-          </div>
-
-          <div className="mt-4 d-flex w-100 justify-content-center align-items-center gap-3">
-
-
-            <CustomButton
-              className="shadow-light"
-              size="l"
-              handleClick={() => setShowMap(true)}
-              label={'Ver no mapa'}
-              title="Ver no mapa"
-              icon={<i className=" fs-6 bi bi-geo"></i>}
-              theme="secundary"
-            />
-
-            <CustomButton
-              className="shadow-light"
-              size="l"
-              handleClick={() => { }}
-              label={'Continuar'}
-              title="Continuar"
-            />
-          </div>
-        </Card.Body>
-      </Card>
-
-
-      <Row className="mb-3">
-        <Col xs="auto" className="d-flex align-items-center justify-content-center w-100">
-          <CustomButton
-            className="shadow-light text-wrap py-4"
-            size="l"
-            icon={<i className="bi bi-person-x-fill fs-3"></i>}
-            theme="red"
-            handleClick={() => { }}
-            label={'Cliente não localizado'}
-            title="Cliente não localizado"
-          />
-        </Col>
-      </Row>
-
-
+      {renderStepContent()}
 
       <MapModal
         show={showMap}
@@ -162,7 +198,7 @@ const DeliveryPage = () => {
         latitude={parseFloat(client?.address?.latitude)}
         longitude={parseFloat(client?.address?.longitude)}
       />
-    </Fragment >
+    </Fragment>
   );
 };
 DeliveryPage.layout = "Contentlayout";
