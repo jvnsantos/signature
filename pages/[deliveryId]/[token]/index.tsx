@@ -127,7 +127,8 @@ const DeliveryPage = () => {
         return (
           <Card className="shadow-light">
             <Card.Body>
-              <ListPdfDocument handleNext={() => setCurrentStep(3)} />
+              {/* Pula para o 4*** */}
+              <ListPdfDocument handleNext={() => setCurrentStep(4)} />
             </Card.Body>
           </Card>
         );
@@ -135,6 +136,7 @@ const DeliveryPage = () => {
         return (
           <Card className="shadow-light p-0">
             <Card.Body className="p-0">
+               {/* Volta para o 2*** */}
               <RenderPdfViewer handleBack={() => setCurrentStep(2)} />
             </Card.Body>
           </Card>

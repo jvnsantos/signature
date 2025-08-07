@@ -1,3 +1,4 @@
+import CustomButton from "@/shared/components/custom-button"
 import { useGlobalContext } from "@/shared/context/global-context"
 import { Fragment, useEffect, useState } from "react"
 
@@ -79,34 +80,26 @@ const RenderPdfViewer = ({ handleBack }: Props) => {
         {/* Informações adicionais */}
         <div className="mt-3">
           <div className="row">
-            <div className="col-md-4">
-              <small className="text-muted">
+            <div className="d-flex flex-column">
+              <strong className="text-muted">
                 <i className="bi bi-info-circle me-1"></i>
                 Documento: {selectedPdf.invoice}
-              </small>
-            </div>
-            <div className="col-md-4 text-center">
-              <small className="text-muted">
-                <i className="bi bi-list-ol me-1"></i>
-                Ordem: {selectedPdf.ordering}
-              </small>
+              </strong>
+              <small className="text-muted ps-3">{selectedPdf.description}</small>
             </div>
           </div>
         </div>
 
         <div>
-          <div className="d-flex align-items-center mb-1">
-            <button
-              className="btn btn-outline-secondary btn-sm me-3"
-              onClick={handleBack}
+          <div className="my-3">
+            <CustomButton
+              theme="secundary"
+              handleClick={handleBack}
+              label={'Voltar à lista'}
               title="Voltar à lista"
-            >
-              <i className="bi bi-arrow-left me-1"></i>
-              Voltar1
-            </button>
-            <h4 className="mb-0">{selectedPdf.invoice}</h4>
+              icon={<i className="bi bi-arrow-left me-1"></i>}
+            />
           </div>
-          <small className="text-muted">{selectedPdf.description}</small>
         </div>
       </div>
     </Fragment>
