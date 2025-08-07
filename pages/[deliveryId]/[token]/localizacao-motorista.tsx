@@ -2,7 +2,10 @@
 import CustomButton from "@/shared/components/custom-button"
 import { Fragment, useState } from "react"
 
-const DriverGeolocalization = () => {
+type Props = {
+  handleNext: () => void
+}
+const DriverGeolocalization = ({ handleNext }: Props) => {
   const [lat, setLat] = useState<number | null>(null)
   const [lon, setLon] = useState<number | null>(null)
   const [address, setAddress] = useState<any>("")
@@ -42,7 +45,7 @@ const DriverGeolocalization = () => {
         try {
           const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`)
           const data = await res.json()
-
+          console.log(data)
           setAddress(data)
         } catch (error) {
           console.error("Erro ao buscar endereço:", error)
@@ -87,12 +90,12 @@ const DriverGeolocalization = () => {
         />
       </div>
 
-      {lat && lon && (
+      {lat && lon && address && (
         <Fragment>
           <div className="d-flex flex-row gap-2 align-items-center mt-3">
             <i className="bi bi-geo-alt fs-5 text-primary"></i>
             <span>
-              {address?.address?.city}/{address?.address?.state}
+              {address?.address?.city ?? address?.address?.town}/{address?.address?.state}
             </span>
           </div>
           <div style={{ marginTop: 10 }}>
@@ -107,15 +110,14 @@ const DriverGeolocalization = () => {
             }
           </div>
 
-          <div className="mt-3">
+          {!loading && <div className="mt-3">
             <CustomButton
-              handleClick={() => { }}
-              loading={loading}
-              label={'Próximo'}
+              handleClick={handleNext}
+              label={<>Avançar</>}
               title="Próximo"
-              icon={<i className="bi bi-geo-alt-fill"></i>}
             />
-          </div>
+          </div>}
+
         </Fragment>
       )}
     </Fragment>

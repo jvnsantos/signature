@@ -10,6 +10,9 @@ import { useRouter } from "next/router";
 import { Fragment, useEffect, useState } from "react";
 import { Card, Col, Row } from "react-bootstrap";
 import DriverGeolocalization from "./localizacao-motorista";
+import ListPdfDocument from "./listagem-pdf";
+import DropAttachments from "./envio-anexos";
+import SignatureCollect from "./assinatura";
 
 const DeliveryPage = () => {
   const router = useRouter();
@@ -115,7 +118,7 @@ const DeliveryPage = () => {
         return (
           <Card className="shadow-light">
             <Card.Body>
-              <DriverGeolocalization />
+              <DriverGeolocalization handleNext={() => setCurrentStep(2)} />
             </Card.Body>
           </Card>
         );
@@ -123,14 +126,7 @@ const DeliveryPage = () => {
         return (
           <Card className="shadow-light">
             <Card.Body>
-              <h4>Listagem dos PDFs</h4>
-              {/* Componente de PDFs */}
-              <CustomButton
-                handleClick={() => setCurrentStep(3)}
-                label="Continuar"
-                title="Continuar"
-                className="mt-3"
-              />
+              <ListPdfDocument handleNext={() => setCurrentStep(3)} />
             </Card.Body>
           </Card>
         );
@@ -138,14 +134,7 @@ const DeliveryPage = () => {
         return (
           <Card className="shadow-light">
             <Card.Body>
-              <h4>Anexos</h4>
-              {/* Upload de arquivos */}
-              <CustomButton
-                handleClick={() => setCurrentStep(4)}
-                label="Continuar"
-                title="Continuar"
-                className="mt-3"
-              />
+              <DropAttachments handleNext={() => setCurrentStep(4)} />
             </Card.Body>
           </Card>
         );
@@ -153,14 +142,7 @@ const DeliveryPage = () => {
         return (
           <Card className="shadow-light">
             <Card.Body>
-              <h4>Assinatura digital</h4>
-              {/* Canvas de assinatura */}
-              <CustomButton
-                title="Finalizar entrega"
-                handleClick={() => setCurrentStep(5)}
-                label="Finalizar entrega"
-                className="mt-3"
-              />
+              <SignatureCollect handleNext={() => setCurrentStep(5)} />
             </Card.Body>
           </Card>
         );
@@ -168,7 +150,7 @@ const DeliveryPage = () => {
         return (
           <Card className="shadow-light">
             <Card.Body>
-              <h4>Entrega concluída!</h4>
+              <h4>Testes concluídos!</h4>
               <p>Obrigado por utilizar nosso sistema.</p>
             </Card.Body>
           </Card>
