@@ -143,8 +143,8 @@ const DeliveryPage = () => {
         );
       case 4:
         return (
-          <Card className="shadow-light">
-            <Card.Body>
+           <Card className="shadow-light p-0">
+            <Card.Body className="p-0">
               <DropAttachments handleNext={() => setCurrentStep(5)} />
             </Card.Body>
           </Card>

@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { Camera, X } from 'lucide-react';
 import CustomButton from '@/shared/components/custom-button';
+import { Camera, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { Form, Modal } from 'react-bootstrap';
+import Select from "react-select";
 
 type Photo = {
   id: number;
@@ -23,11 +25,11 @@ const PhotoCollector = ({ handleNext }: Props) => {
   const [error, setError] = useState('');
 
   const photoTypes = [
-    "Fachada de estabelecimento",
-    "Fotografia do recebedor (solicitante)",
-    "Fotografia da carga",
-    "Fotografia recebedor (Não solicitante)",
-    "Outros motivos"
+    { value: "Fachada de estabelecimento", label: "Fachada de estabelecimento" },
+    { value: "Fotografia do recebedor (solicitante)", label: "Fotografia do recebedor (solicitante)" },
+    { value: "Fotografia recebedor (Não solicitante)", label: "Fotografia recebedor (Não solicitante)" },
+    { value: "Fotografia da carga", label: "Fotografia da carga" },
+    { value: "Outros motivos", label: "Outros motivos" },
   ];
 
   const handleCameraCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,102 +159,107 @@ const PhotoCollector = ({ handleNext }: Props) => {
         </div>
       </div>
 
+
       {/* Modal para configurar a foto */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-sm w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-4 border-b">
-              <h3 className="text-lg font-semibold">Configurar Foto</h3>
-              <button
-                onClick={handleCloseModal}
-                className="text-gray-400 hover:text-gray-600"
-                type="button"
-                aria-label="Fechar modal"
-              >
-                <X size={20} />
-              </button>
-            </div>
+      <Modal centered show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Body className='p-3'>
+          <div className="fixed inset-0 flex items-center justify-center">
+            <div className="bg-white rounded-lg max-w-sm w-full overflow-y-auto">
+              <div className="">
+                {currentPhoto && (
+                  <div className="mb-4">
+                    <img
+                      src={currentPhoto}
+                      alt="Preview da foto"
+                      className="w-100 h-48 object-contain rounded-lg"
+                    />
+                  </div>
+                )}
 
-            <div className="p-4">
-              {currentPhoto && (
-                <div className="mb-4">
-                  <img
-                    src={currentPhoto}
-                    alt="Preview da foto"
-                    className="w-full h-48 object-cover rounded-lg"
+                {error && (
+                  <div className="bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded mb-4 text-sm">
+                    {error}
+                  </div>
+                )}
+
+
+                <Form.Group className="mb-3" controlId="amount">
+                  <Form.Label>Tipo da Foto <span className='mandatory' /></Form.Label>
+
+                  <Select
+                    options={photoTypes}
+                    placeholder={'Selecione um tipo'}
+                    classNamePrefix="custom-select"
+                    onChange={(e: any) => { console.log(e.value); setPhotoType(e.value as string) }}
                   />
-                </div>
-              )}
 
-              {error && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded mb-4 text-sm">
-                  {error}
-                </div>
-              )}
+                  <Form.Control.Feedback type="invalid">
+                    Por favor, forneça o valor da cobrança.
+                  </Form.Control.Feedback>
+                </Form.Group>
 
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tipo da Foto *
-                </label>
-                <select
-                  value={photoType}
-                  onChange={(e) => setPhotoType(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
-                >
-                  <option value="">Selecione o tipo da foto</option>
-                  {photoTypes.map((type, index) => (
-                    <option key={index} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </select>
+
+                <Form.Group className="mb-3" controlId="amount">
+                  <Form.Label>Observações</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    value={observations}
+                    onChange={(e) => setObservations(e.target.value)}
+                    placeholder="Adicione observações sobre a foto (opcional)"
+                  />
+
+                  <Form.Control.Feedback type="invalid">
+                    Por favor, forneça o valor da cobrança.
+                  </Form.Control.Feedback>
+                </Form.Group>
+
+
+                {/* <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Observações
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={observations}
+                    onChange={(e) => setObservations(e.target.value)}
+                    placeholder="Adicione observações sobre a foto (opcional)"
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                  />
+                </div> */}
+
+                {photoType && (
+                  <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+                    <div className="text-sm text-gray-600">
+                      <strong>Descrição final:</strong>
+                    </div>
+                    <div className="text-sm text-gray-800 mt-1">
+                      {photoType}{observations ? ` - ${observations}` : ''}
+                    </div>
+                  </div>
+                )}
               </div>
 
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Observações
-                </label>
-                <textarea
-                  rows={3}
-                  value={observations}
-                  onChange={(e) => setObservations(e.target.value)}
-                  placeholder="Adicione observações sobre a foto (opcional)"
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+              <div className="d-flex justify-content-center gap-5 w-100">
+                <CustomButton
+                  size='l'
+                  theme='secundary'
+                  handleClick={handleCloseModal}
+                  label={'Cancelar'}
+                  title='Cancelar'
                 />
+                <CustomButton
+                  size='l'
+                  handleClick={handleSavePhoto}
+                  label={'Salvar foto'}
+                  title='Salvar foto'
+                />
+
               </div>
-
-              {photoType && (
-                <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-                  <div className="text-sm text-gray-600">
-                    <strong>Descrição final:</strong>
-                  </div>
-                  <div className="text-sm text-gray-800 mt-1">
-                    {photoType}{observations ? ` - ${observations}` : ''}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="flex gap-2 p-4 border-t">
-              <button
-                onClick={handleCloseModal}
-                className="flex-1 px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                type="button"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleSavePhoto}
-                className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                type="button"
-              >
-                Salvar Foto
-              </button>
             </div>
           </div>
-        </div>
-      )}
+        </Modal.Body>
+      </Modal>
 
       {/* Botão customizado para continuar */}
       <div className="mt-4">

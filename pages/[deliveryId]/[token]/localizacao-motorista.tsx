@@ -110,7 +110,7 @@ const DriverGeolocalization = ({ handleNext }: Props) => {
             }
           </div>
 
-          {!loading && <div className="mt-3">
+          {!loading && <div className="mt-5">
             <CustomButton
               handleClick={handleNext}
               label={<>Avançar</>}
