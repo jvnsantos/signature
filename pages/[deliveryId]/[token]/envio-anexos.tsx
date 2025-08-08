@@ -2,7 +2,7 @@
 import { API_GET_ATTACHMENTS } from "@/pages/api/delivery";
 import { useGlobalContext } from "@/shared/context/global-context";
 import { useEffect, useState } from "react";
-import { Alert, Button, Form, Modal } from "react-bootstrap";
+import { Alert, Button, Carousel, Form, Modal } from "react-bootstrap";
 import CameraModal from "./camera-moda";
 import CustomButton from "@/shared/components/custom-button";
 import { PicSvgElement } from "@/shared/svg-component";
@@ -140,45 +140,58 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
       </div>
 
       {/* Grade de fotos */}
-      <div >
+      <Carousel
+        variant="dark"
+        interval={null}
+        indicators={true}
+        nextLabel=""
+        prevLabel=""
+        style={{ maxWidth: "400px", margin: "0 auto" }} // centraliza o carousel e limita largura
+      >
         {photos.map((photo) => (
-          <div
-            key={photo.id}
-            className="relative bg-white rounded-lg shadow-sm overflow-hidden cursor-pointer"
-            onClick={() => handleOpenEdit(photo)}
-          >
-            <div className="relative aspect-[4/4]">
-              <img
-                src={photo.image}
-                alt="Foto"
-                className="w-50  object-contain"
-              />
-              <span onClick={(e) => {
-                e.stopPropagation();
-                handleRemovePhoto(photo.id);
+          <Carousel.Item key={photo.id}>
+            <img
+              className="d-block mx-auto"
+              src={photo.image}
+              alt={photo.description || "Foto"}
+              style={{
+                height: "300px",    // altura fixa
+                objectFit: "contain",
+                width: "100%",      // ocupa toda largura do container do carousel
+                cursor: "pointer",
+                backgroundColor: "#f8f9fa", // opcional: fundo leve para destacar
               }}
-                className="close-miniature" />
-
-            </div>
-            <div className="p-2">
-              <p className="text-xs text-gray-600 leading-tight">
-                {photo.description}
-              </p>
-            </div>
-          </div>
+              onClick={() => handleOpenEdit(photo)}
+            />
+            <Carousel.Caption>
+              <p>{photo.description}</p>
+              <Button
+                variant="danger"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleRemovePhoto(photo.id);
+                }}
+              >
+                Remover
+              </Button>
+            </Carousel.Caption>
+          </Carousel.Item>
         ))}
+      </Carousel>
 
-        {/* Botão adicionar */}
-        {photos.length < 6 && (
+      {/* Botão adicionar foto */}
+      {photos.length < 6 && (
+        <div className="text-center mt-3">
           <CustomButton
             className="py-4"
             icon={<i className="bi bi-image"></i>}
             theme="secundary"
-            label='Adicionar Foto'
+            label="Adicionar Foto"
             handleClick={() => setShowCamera(true)}
           />
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Botões de ação */}
       <div className="flex justify-between mt-4">
@@ -213,7 +226,7 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
             <img
               src={currentPhoto}
               alt="Foto capturada"
-              className="w-full h-auto mb-3 rounded"
+              className="w-100 h-auto mb-3 rounded"
             />
           )}
 
