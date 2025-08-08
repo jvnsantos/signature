@@ -2,7 +2,7 @@ import { FC, Fragment } from "react";
 
 type Props = {
   label: string | JSX.Element;
-  title: string;
+  title?: string;
   handleClick: () => void;
   className?: string;
   icon?: JSX.Element;
@@ -40,7 +40,7 @@ const CustomButton: FC<Props> = ({
 
   return (
     <div
-      title={title}
+      title={title ? title : label as string}
       className={`${baseClass} ${variantThemeClass} ${sizeClass} ${loadingeClass} ${disableClass} ${className}`.trim()}
       onClick={onClick}
       style={{

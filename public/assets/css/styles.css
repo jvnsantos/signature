@@ -43292,6 +43292,18 @@ content: '*';
 color: var(--status-red-900)
 }
 
+.close-miniature::after{
+content: 'x';
+height: 35px;
+width:  35px;
+font-size: 16px;
+padding: 5px;
+text-align: center;
+border-radius: 50%;
+background-color:var(--status-red-900) ;
+color: white
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);

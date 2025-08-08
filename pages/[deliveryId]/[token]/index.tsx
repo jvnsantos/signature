@@ -18,7 +18,7 @@ import RenderPdfViewer from "./pdf-viewer";
 
 const DeliveryPage = () => {
   const router = useRouter();
-  const { setClient, setCompany, setDelivery, setInvoice, client, company, setShowHeader, showHeader, currentStep, setCurrentStep } = useGlobalContext()
+  const { setClient, setCompany, setDelivery, setInvoice, client, company, setShowHeader, showHeader, currentStep, setCurrentStep, setToken } = useGlobalContext()
   const { deliveryId, token } = router.query;
   const [showMap, setShowMap] = useState(false);
   const [authorized, setAuthorized] = useState<boolean | null>(null);
@@ -30,6 +30,7 @@ const DeliveryPage = () => {
         RedirectUnauthorized({ router })
         return
       }
+      setToken(token as string)
       const response = await API_GET_DELIVERY({ deliveryId: deliveryId as string, token: token as string })
 
       trativeResponseUtils({
@@ -136,16 +137,16 @@ const DeliveryPage = () => {
         return (
           <Card className="shadow-light p-0">
             <Card.Body className="p-0">
-               {/* Volta para o 2*** */}
+              {/* Volta para o 2*** */}
               <RenderPdfViewer handleBack={() => setCurrentStep(2)} />
             </Card.Body>
           </Card>
         );
       case 4:
         return (
-           <Card className="shadow-light p-0">
+          <Card className="shadow-light p-0">
             <Card.Body className="p-0">
-              <DropAttachments handleNext={() => setCurrentStep(5)} />
+              <DropAttachments  deliveryId={deliveryId as string} handleNext={() => setCurrentStep(5)} />
             </Card.Body>
           </Card>
         );
