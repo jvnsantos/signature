@@ -1,5 +1,7 @@
+import getCroppedImg from "@/shared/utils/get-cropped-img";
 import React, { useRef, useState, useEffect } from "react";
 import { Modal, Button } from "react-bootstrap";
+import Cropper from "react-easy-crop";
 
 type CameraModalProps = {
   show: boolean;
@@ -11,34 +13,53 @@ const CameraModal: React.FC<CameraModalProps> = ({ show, onClose, onCapture }) =
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
-  const [captured, setCaptured] = useState<string | null>(null);
 
-  // Inicia câmera ao abrir modal
+  // Crop state
+  const [captured, setCaptured] = useState<string | null>(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+  const [cropping, setCropping] = useState(false);
+
   useEffect(() => {
     if (show) {
       startCamera();
     } else {
       stopCamera();
       setCaptured(null);
+      setCropping(false);
     }
     return () => stopCamera();
   }, [show]);
 
   const startCamera = async () => {
     try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { exact: "environment" } }
+      });
       setStream(mediaStream);
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
       }
     } catch (error) {
-      console.error("Erro ao acessar câmera:", error);
+      console.log(error)
+      try {
+        const mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: "environment" } }
+        });
+        setStream(mediaStream);
+        if (videoRef.current) {
+          videoRef.current.srcObject = mediaStream;
+        }
+      } catch (error2) {
+        console.error("Erro ao acessar câmera traseira:", error2);
+      }
     }
   };
 
   const stopCamera = () => {
     if (stream) {
-      stream.getTracks().forEach(track => track.stop());
+      stream.getTracks().forEach((track) => track.stop());
     }
   };
 
@@ -46,17 +67,29 @@ const CameraModal: React.FC<CameraModalProps> = ({ show, onClose, onCapture }) =
     if (videoRef.current && canvasRef.current) {
       const context = canvasRef.current.getContext("2d");
       if (context) {
-        context.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
+        // Ajuste do canvas para o tamanho do vídeo
+        canvasRef.current.width = videoRef.current.videoWidth;
+        canvasRef.current.height = videoRef.current.videoHeight;
+        context.drawImage(videoRef.current, 0, 0);
         const imageData = canvasRef.current.toDataURL("image/jpeg");
         setCaptured(imageData);
+        setCropping(true);
+        stopCamera();
       }
     }
   };
 
-  const handleConfirm = () => {
-    if (captured) {
-      onCapture(captured);
+  const onCropComplete = (_croppedArea: any, croppedAreaPixels: any) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  };
+
+  const showCroppedImage = async () => {
+    try {
+      const croppedImage = await getCroppedImg(captured!, croppedAreaPixels);
+      onCapture(croppedImage);
       onClose();
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -69,8 +102,20 @@ const CameraModal: React.FC<CameraModalProps> = ({ show, onClose, onCapture }) =
         {!captured ? (
           <>
             <video ref={videoRef} autoPlay playsInline className="w-100 rounded" />
-            <canvas ref={canvasRef} width={640} height={480} style={{ display: "none" }} />
+            <canvas ref={canvasRef} style={{ display: "none" }} />
           </>
+        ) : cropping ? (
+          <div style={{ position: "relative", width: "100%", height: 400, background: "#333" }}>
+            <Cropper
+              image={captured}
+              crop={crop}
+              zoom={zoom}
+              aspect={4 / 3} // proporção que desejar
+              onCropChange={setCrop}
+              onZoomChange={setZoom}
+              onCropComplete={onCropComplete}
+            />
+          </div>
         ) : (
           <img src={captured} alt="Prévia" className="w-100 rounded" />
         )}
@@ -80,16 +125,23 @@ const CameraModal: React.FC<CameraModalProps> = ({ show, onClose, onCapture }) =
           <Button variant="primary" onClick={takePhoto}>
             Capturar
           </Button>
-        ) : (
+        ) : cropping ? (
           <>
-            <Button variant="secondary" onClick={() => setCaptured(null)}>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setCaptured(null);
+                setCropping(false);
+                startCamera();
+              }}
+            >
               Retirar outra
             </Button>
-            <Button variant="success" onClick={handleConfirm}>
+            <Button variant="success" onClick={showCroppedImage}>
               Usar foto
             </Button>
           </>
-        )}
+        ) : null}
       </Modal.Footer>
     </Modal>
   );
