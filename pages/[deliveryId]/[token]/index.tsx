@@ -19,7 +19,7 @@ import ReceiverStep from "./recebedor";
 
 const DeliveryPage = () => {
   const router = useRouter();
-  const { setClient, setCompany, setDelivery, setInvoice, client, company, setShowHeader, showHeader, currentStep, setCurrentStep, setToken } = useGlobalContext()
+  const { setClient, setCompany, setDelivery, setInvoice, client, company, setShowHeader, currentStep, setCurrentStep, setToken } = useGlobalContext()
   const { deliveryId, token } = router.query;
   const [showMap, setShowMap] = useState(false);
   const [authorized, setAuthorized] = useState<boolean | null>(null);
@@ -189,7 +189,7 @@ const DeliveryPage = () => {
     validate();
   }, [deliveryId, token]);
 
-  if (authorized === null || !showHeader) {
+  if (authorized === null) {
     return <LoadingPage />;
   }
 

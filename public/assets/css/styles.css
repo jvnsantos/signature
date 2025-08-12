@@ -43366,6 +43366,13 @@ color: white
   transform: translateX(0%);
 }
 
+.sigCanvas{
+background-color: rgba(
+    138,178,150,
+    0.1
+  );
+}
+
 
 @keyframes spin {
   0% {
