@@ -1,3 +1,4 @@
+import CustomButton from "@/shared/components/custom-button";
 import getCroppedImg from "@/shared/utils/get-cropped-img";
 import React, { useRef, useState, useEffect } from "react";
 import { Modal, Button } from "react-bootstrap";
@@ -127,19 +128,21 @@ const CameraModal: React.FC<CameraModalProps> = ({ show, onClose, onCapture }) =
           </Button>
         ) : cropping ? (
           <>
-            <Button
-              variant="secondary"
-              onClick={() => {
+            <CustomButton
+              theme="secundary"
+              label={'Tentar novamente'}
+              handleClick={() => {
                 setCaptured(null);
                 setCropping(false);
                 startCamera();
               }}
-            >
-              Retirar outra
-            </Button>
-            <Button variant="success" onClick={showCroppedImage}>
-              Usar foto
-            </Button>
+            />
+
+            <CustomButton
+              label={'Usar foto'}
+              handleClick={showCroppedImage}
+            />
+
           </>
         ) : null}
       </Modal.Footer>

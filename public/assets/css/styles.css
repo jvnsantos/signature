@@ -11473,6 +11473,7 @@ fieldset:disabled .btn {
   background-repeat: no-repeat;
   background-position: 50%;
   background-size: 100% 100%;
+  display: none;
 }
 
 .carousel-control-prev-icon {
@@ -43303,6 +43304,68 @@ border-radius: 50%;
 background-color:var(--status-red-900) ;
 color: white
 }
+
+
+/* NEW INPUT */
+.new-form {
+  overflow: hidden;
+  position: relative;
+  width: 80%;
+}
+
+.new-input {
+  color: #000;
+  font-size: 14px;
+  width: 100%;
+  padding: 20px 5px 5px;
+  border: none;
+  border-radius: 4px;
+}
+
+.new-input-label {
+  color: #000;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  border-bottom: 1px solid #000;
+}
+
+.new-input-span {
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.new-input-label::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 100%;
+  height: 100%;
+  border-bottom: 1px solid var(--primary-color);
+  transform: translateX(-100%);
+  transition: all 0.3s ease;
+}
+
+.new-input:focus + .new-input-label .new-input-span,
+.new-input:valid + .new-input-label .new-input-span {
+  transform: translateY(-150%);
+  font-size: 8px;
+  bottom: 10px;
+  color: #000;
+}
+
+.new-input:focus + .new-input-label::after,
+.new-input:valid + .new-input-label::after {
+  transform: translateX(0%);
+}
+
 
 @keyframes spin {
   0% {

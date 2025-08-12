@@ -15,6 +15,7 @@ import ListPdfDocument from "./listagem-pdf";
 import DropAttachments from "./envio-anexos";
 import SignatureCollect from "./assinatura";
 import RenderPdfViewer from "./pdf-viewer";
+import ReceiverStep from "./recebedor";
 
 const DeliveryPage = () => {
   const router = useRouter();
@@ -144,21 +145,31 @@ const DeliveryPage = () => {
         );
       case 4:
         return (
-          <Card className="shadow-light p-0">
-            <Card.Body className="p-0">
-              <DropAttachments  deliveryId={deliveryId as string} handleNext={() => setCurrentStep(5)} />
+          <Card className="shadow-light ">
+            <Card.Body className="">
+              {/* Volta para o 2*** */}
+               <ReceiverStep handleNext={() => setCurrentStep(5)} />
             </Card.Body>
           </Card>
         );
       case 5:
         return (
-          <Card className="shadow-light">
-            <Card.Body>
-              <SignatureCollect handleNext={() => setCurrentStep(6)} />
+          <Card className="shadow-light p-0">
+            <Card.Body className="p-0">
+              {/*  */}
+              <DropAttachments  deliveryId={deliveryId as string} handleNext={() => setCurrentStep(6)} />
             </Card.Body>
           </Card>
         );
       case 6:
+        return (
+          <Card className="shadow-light">
+            <Card.Body>
+              <SignatureCollect handleNext={() => setCurrentStep(7)} />
+            </Card.Body>
+          </Card>
+        );
+      case 7:
         return (
           <Card className="shadow-light">
             <Card.Body>
