@@ -1,11 +1,15 @@
 'use client'
+import { API_UPDATE_LOCATION } from "@/pages/api/delivery"
 import CustomButton from "@/shared/components/custom-button"
-import { Fragment, useState } from "react"
+import { useGlobalContext } from "@/shared/context/global-context"
+import trativeResponseUtils from "@/shared/utils/trative-response.utils"
+import { Fragment, useEffect, useState } from "react"
 
 type Props = {
   handleNext: () => void
 }
 const DriverGeolocalization = ({ handleNext }: Props) => {
+  const { delivery, token } = useGlobalContext()
   const [lat, setLat] = useState<number | null>(null)
   const [lon, setLon] = useState<number | null>(null)
   const [address, setAddress] = useState<any>("")
@@ -25,6 +29,7 @@ const DriverGeolocalization = ({ handleNext }: Props) => {
         const { latitude, longitude, accuracy } = position.coords
         setLat(latitude)
         setLon(longitude)
+        updateDriverLocation(latitude, longitude)
 
         console.log(`Precisão da localização: ${accuracy} metros`)
 
@@ -66,6 +71,37 @@ const DriverGeolocalization = ({ handleNext }: Props) => {
       }
     )
   }
+
+  const updateDriverLocation = async (latitude: number, longitude: number) => {
+    try {
+      const response = await API_UPDATE_LOCATION({
+        payload: { latitude, longitude },
+        deliveryId: delivery.id,
+        token
+      })
+
+      trativeResponseUtils({
+        response,
+        callBackError: () => handleNext(),
+        callBackSuccess: (message) => console.log({ message })
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  useEffect(() => {
+    const hasRun = { current: false } as { current: boolean };
+
+    if (!hasRun.current) {
+      hasRun.current = true;
+
+      const timer = setTimeout(() => {
+        handleGetLocation();
+      }, 2000); 
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   return (
     <Fragment>

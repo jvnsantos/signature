@@ -5,6 +5,9 @@ import { useState } from "react";
 import { Alert, Button, Carousel, Form, Modal } from "react-bootstrap";
 import CameraModal from "./camera-moda";
 import inputCpfMaskUtils from "@/shared/utils/input-cpf-mask.utils";
+import { API_CREATE_ATTACHMENTS, API_UPDATE_RECEIVER } from "@/pages/api/delivery";
+import { useGlobalContext } from "@/shared/context/global-context";
+import trativeResponseUtils from "@/shared/utils/trative-response.utils";
 
 // Tipos
 type Photo = {
@@ -20,10 +23,19 @@ type Props = {
 };
 
 const ReceiverStep = ({ handleNext }: Props) => {
+  const { token, delivery } = useGlobalContext()
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [showCamera, setShowCamera] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
+  const handleProccess = async () => {
+    try {
+      await handleCrateAttachment()
+      await handleUpdateReceiver()
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   const initialValues = {
     fullName: '',
@@ -41,7 +53,7 @@ const ReceiverStep = ({ handleNext }: Props) => {
   }
 
   const [currentPhoto, setCurrentPhoto] = useState<string | null>(null);
-  const [photoType, setPhotoType] = useState("");
+  const [photoType, setPhotoType] = useState("receiver_delivery");
   const [observations, setObservations] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -56,7 +68,8 @@ const ReceiverStep = ({ handleNext }: Props) => {
 
 
   const handleSavePhoto = () => {
-    if (!photoType || !currentPhoto) {
+    setPhotos([])
+    if (!currentPhoto) {
       setError("Preencha todos os campos obrigatórios");
       return;
     }
@@ -70,7 +83,7 @@ const ReceiverStep = ({ handleNext }: Props) => {
       updated[existingIndex] = {
         ...updated[existingIndex],
         description,
-        type: photoType,
+        type: 'receiver_delivery',
         observations,
       };
       setPhotos(updated);
@@ -82,7 +95,7 @@ const ReceiverStep = ({ handleNext }: Props) => {
           id: Date.now(),
           image: currentPhoto,
           description,
-          type: photoType,
+          type: 'receiver_delivery',
           observations,
         },
       ]);
@@ -111,6 +124,54 @@ const ReceiverStep = ({ handleNext }: Props) => {
     setObservations("");
     setError(null);
   };
+
+  const handleUpdateReceiver = async () => {
+    try {
+
+      const response = await API_UPDATE_RECEIVER({
+        deliveryId: delivery.id,
+        payload: {
+          receiverName: formControll.fullName,
+          receiverTaxIdentifier: formControll.document
+        },
+        token: token
+      })
+
+      trativeResponseUtils({
+        response,
+        callBackSuccess: () => {handleNext()},
+        callBackError: (message) => console.error(message)
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const handleCrateAttachment = async () => {
+    try {
+      const base64Image = photos[0].image; // "data:image/jpeg;base64,...."
+      const nomeArquivo = "receiver_delivery.jpg";
+
+      const blob = await fetch(base64Image).then(res => res.blob());
+
+      const formData = new FormData();
+      formData.append("image", blob, nomeArquivo);
+      formData.append("name", "receiver_delivery"); // identificador vai no FormData
+
+      await API_CREATE_ATTACHMENTS({
+        formData,
+        token,
+        deliveryId: delivery.id
+      });
+
+      console.log({ photos });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+
+
 
   const canProceed = photos.length >= 1;
 
@@ -189,23 +250,23 @@ const ReceiverStep = ({ handleNext }: Props) => {
       </Carousel>
 
       {/* Botão adicionar foto */}
-      {photos.length < 1 && (
-        <div className="text-center mt-3">
-          <CustomButton
-            className="py-4"
-            icon={<i className="bi bi-image"></i>}
-            theme="secundary"
-            label="Adicionar Foto"
-            handleClick={() => setShowCamera(true)}
-          />
-        </div>
-      )}
+
+      <div className="text-center mt-3">
+        <CustomButton
+          disable={formControll?.document?.length < 14 || formControll?.fullName?.length < 6}
+          className="py-4"
+          icon={<i className="bi bi-image"></i>}
+          theme="secundary"
+          label="Adicionar Foto"
+          handleClick={() => setShowCamera(true)}
+        />
+      </div>
 
       {/* Botões de ação */}
       <div className="flex justify-between mt-4">
         <CustomButton
           className="py-4"
-          handleClick={handleNext}
+          handleClick={handleProccess}
           disable={!canProceed}
           label='Próximo'
         />
@@ -245,10 +306,7 @@ const ReceiverStep = ({ handleNext }: Props) => {
               value={photoType}
               onChange={(e) => setPhotoType(e.target.value)}
             >
-              <option value="">Selecione</option>
-              <option value="Foto 1">Foto 1</option>
-              <option value="Foto 2">Foto 2</option>
-              <option value="Foto 3">Foto 3</option>
+              <option value="receiver_delivery">Foto do recebedor</option>
             </Form.Control>
           </Form.Group>
 

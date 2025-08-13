@@ -1,6 +1,5 @@
 // /pages/[deliveryId]/[token]/index.tsx
 'use client'
-import API_GET_DELIVERY from "@/pages/api/delivery";
 import CustomButton from "@/shared/components/custom-button";
 import LoadingPage from "@/shared/components/loading-page";
 import MapModal from "@/shared/components/map-modal";
@@ -16,6 +15,7 @@ import DropAttachments from "./envio-anexos";
 import SignatureCollect from "./assinatura";
 import RenderPdfViewer from "./pdf-viewer";
 import ReceiverStep from "./recebedor";
+import { API_GET_DELIVERY } from "@/pages/api/delivery";
 
 const DeliveryPage = () => {
   const router = useRouter();
