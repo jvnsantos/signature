@@ -2,7 +2,7 @@ import { useGlobalContext } from "@/shared/context/global-context"
 import { Fragment, useState } from "react"
 
 const FinishViwer = () => {
-  const { finalDocumentUrl } = useGlobalContext()
+  const { finalDocumentUrl} = useGlobalContext()
   const [isLoadingViewer, setIsLoadingViewer] = useState<boolean>(true)
 
   if (!finalDocumentUrl) {
@@ -31,6 +31,8 @@ const FinishViwer = () => {
           overflow: 'hidden'
         }}
       >
+        <h2>Entrega confirmada</h2>
+
         {isLoadingViewer && (
           <div className="position-absolute top-50 start-50 translate-middle">
             <div className="d-flex flex-column align-items-center">
@@ -63,9 +65,9 @@ const FinishViwer = () => {
             <div className="d-flex flex-column">
               <strong className="text-muted">
                 <i className="bi bi-info-circle me-1"></i>
-                Documento: Documento assinado
+                Comprovante de entrega
               </strong>
-              <small className="text-muted ps-3">Resumo dos documentos herados</small>
+              {/* <small className="text-muted ps-3">Relatório com as informações e anexos referente a entrega  </small> */}
             </div>
           </div>
         </div>

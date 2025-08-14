@@ -12,7 +12,7 @@ type Props = {
 };
 
 const SignatureCollectStep = ({ handleNext }: Props) => {
-  const { token, delivery } = useGlobalContext();
+  const { token, delivery, setFinalDocumentUrl } = useGlobalContext();
   const { setShowHeader } = useGlobalContext()
   const sigRef = useRef<SignatureCanvas>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -84,7 +84,9 @@ const SignatureCollectStep = ({ handleNext }: Props) => {
         callBackError: (message) => {
           console.error(message);
         },
-        callBackSuccess: () => {
+        callBackSuccess: (response) => {
+          console.log(response.data)
+          setFinalDocumentUrl(response?.data?.urlSignatureCompleted)
           handleNext();
         },
       });

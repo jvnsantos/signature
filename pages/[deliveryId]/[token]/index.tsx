@@ -187,8 +187,8 @@ const DeliveryPage = () => {
 
       case 7:
         return (
-          <Card className="shadow-light">
-            <Card.Body>
+          <Card className="shadow-light p-0">
+            <Card.Body className="p-0">
               <FinishViwer />
             </Card.Body>
           </Card>

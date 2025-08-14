@@ -27,6 +27,7 @@ export type Delivery = {
   deletedAt: string | null;
   driver: Driver;
   attachments: DeliveryAttachment[];
+  driverRouter: string;
 };
 
 export type Driver = {
