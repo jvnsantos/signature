@@ -23,7 +23,7 @@ type Props = {
 };
 
 const ReceiverStep = ({ handleNext }: Props) => {
-  const { token, delivery } = useGlobalContext()
+  const { token, delivery, client } = useGlobalContext()
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [showCamera, setShowCamera] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -169,6 +169,14 @@ const ReceiverStep = ({ handleNext }: Props) => {
     }
   };
 
+  const handleFillInputs = () => {
+    setFormControll((prev) => ({
+      ...prev,
+      fullName: client.name,
+      document: inputCpfMaskUtils(client.taxPayerId)
+    }))
+  }
+
   const canProceed = photos.length >= 1;
 
   return (
@@ -186,6 +194,10 @@ const ReceiverStep = ({ handleNext }: Props) => {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="mb-3">
+        <CustomButton icon={<i className="bi bi-person-fill-exclamation fs-5 text-success"></i>} label='Autopreencher' theme="tertiary" handleClick={handleFillInputs} />
       </div>
 
 
@@ -248,6 +260,8 @@ const ReceiverStep = ({ handleNext }: Props) => {
       {/* Botão adicionar foto */}
 
       <div className="text-center mt-3">
+
+        {formControll?.document?.length < 14 || formControll?.fullName?.length < 6}
         <CustomButton
           disable={formControll?.document?.length < 14 || formControll?.fullName?.length < 6}
           className="py-4"
@@ -297,33 +311,22 @@ const ReceiverStep = ({ handleNext }: Props) => {
           )}
 
           <Form.Group className="mb-3">
-            <Form.Label>Tipo de Foto *</Form.Label>
+            <Form.Label>Tipo de Foto</Form.Label>
             <Form.Control
               as="select"
               value={photoType}
+              disabled
               onChange={(e) => setPhotoType(e.target.value)}
             >
               <option value="receiver_delivery">Foto do recebedor</option>
             </Form.Control>
           </Form.Group>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Observações</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Digite observações (opcional)"
-              value={observations}
-              onChange={(e) => setObservations(e.target.value)}
-            />
-          </Form.Group>
+
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Cancelar
-          </Button>
-          <Button variant="primary" onClick={handleSavePhoto}>
-            Salvar
-          </Button>
+          <CustomButton label='Cancelar' theme="secundary" handleClick={handleCloseModal} />
+          <CustomButton label='Salvar' handleClick={handleSavePhoto} />
         </Modal.Footer>
       </Modal>
     </div >

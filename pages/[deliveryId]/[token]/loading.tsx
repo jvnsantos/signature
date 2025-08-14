@@ -39,7 +39,7 @@ const LoadingPage = () => {
         height: '100vh',
         background: '#fff'
       }}>
-        <PayIPIcon style={{ width: 80, height: 80, marginBottom: 20 }}  className="mb-3"/>
+        <PayIPIcon style={{ width: 80, height: 80, marginBottom: 20 }} />
 
         <p
           style={{
