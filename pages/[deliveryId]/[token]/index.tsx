@@ -117,50 +117,63 @@ const DeliveryPage = () => {
             </Card.Body>
           </Card>
         );
+
+
+
+
       case 1:
         return (
           <Card className="shadow-light">
             <Card.Body>
-              <DriverGeolocalization handleNext={() => setCurrentStep(2)} />
+              <ListPdfDocument handleNext={() => setCurrentStep(3)} />
             </Card.Body>
           </Card>
         );
+
+
       case 2:
-        return (
-          <Card className="shadow-light">
-            <Card.Body>
-              {/* Pula para o 4*** */}
-              <ListPdfDocument handleNext={() => setCurrentStep(4)} />
-            </Card.Body>
-          </Card>
-        );
-      case 3:
         return (
           <Card className="shadow-light p-0">
             <Card.Body className="p-0">
               {/* Volta para o 2*** */}
-              <RenderPdfViewer handleBack={() => setCurrentStep(2)} />
+              <RenderPdfViewer handleBack={() => setCurrentStep(1)} />
             </Card.Body>
           </Card>
         );
-      case 4:
+
+
+      case 3:
         return (
           <Card className="shadow-light ">
             <Card.Body className="">
               {/* Volta para o 2*** */}
-               <ReceiverStep handleNext={() => setCurrentStep(5)} />
+              <ReceiverStep handleNext={() => setCurrentStep(4)} />
             </Card.Body>
           </Card>
         );
-      case 5:
+
+
+      case 4:
         return (
           <Card className="shadow-light p-0">
             <Card.Body className="p-0">
-              {/*  */}
-              <DropAttachments  deliveryId={deliveryId as string} handleNext={() => setCurrentStep(6)} />
+              <DropAttachments deliveryId={deliveryId as string} handleNext={() => setCurrentStep(5)} />
             </Card.Body>
           </Card>
         );
+
+
+
+      case 5:
+        return (
+          <Card className="shadow-light">
+            <Card.Body>
+              <DriverGeolocalization handleNext={() => setCurrentStep(6)} />
+            </Card.Body>
+          </Card>
+        );
+
+
       case 6:
         return (
           <Card className="shadow-light">
@@ -169,6 +182,8 @@ const DeliveryPage = () => {
             </Card.Body>
           </Card>
         );
+
+
       case 7:
         return (
           <Card className="shadow-light">

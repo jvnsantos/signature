@@ -1,7 +1,9 @@
 "use client";
+import { API_CREATE_SIGNATURE } from "@/pages/api/signature/create-signature.api";
 import CustomButton from "@/shared/components/custom-button";
 import { useGlobalContext } from "@/shared/context/global-context";
 import { ChangeOrietationSvgComponent, SignatureSvgComponent } from "@/shared/svg-component";
+import trativeResponseUtils from "@/shared/utils/trative-response.utils";
 import { useRef, useEffect, useState } from "react";
 import SignatureCanvas from "react-signature-canvas";
 
@@ -10,6 +12,7 @@ type Props = {
 };
 
 const SignatureCollectStep = ({ handleNext }: Props) => {
+  const { token, delivery } = useGlobalContext();
   const { setShowHeader } = useGlobalContext()
   const sigRef = useRef<SignatureCanvas>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -52,16 +55,45 @@ const SignatureCollectStep = ({ handleNext }: Props) => {
   }, [isLandscape]);
 
   const clear = () => sigRef.current?.clear();
-  const save = () => {
-    const dataUrl = sigRef.current?.toDataURL("image/png");
-    console.log(dataUrl);
-    handleNext();
+  const save = async () => {
+    if (!sigRef.current || sigRef.current.isEmpty()) {
+      console.error("Nenhuma assinatura capturada");
+      return;
+    }
+
+    try {
+      const dataUrl = sigRef.current.toDataURL("image/png");
+      const blob = await fetch(dataUrl).then(res => res.blob());
+      const fileName = "signature.png";
+
+      const formData = new FormData();
+      formData.append("image", blob, fileName);
+
+      const response = await API_CREATE_SIGNATURE({
+        formData,
+        token,
+        deliveryId: delivery.id,
+      });
+
+      trativeResponseUtils({
+        response,
+        callBackError: (message) => {
+          console.error(message);
+        },
+        callBackSuccess: () => {
+          handleNext();
+        },
+      });
+    } catch (err) {
+      console.error("Erro ao salvar assinatura:", err);
+    }
   };
+
 
   if (!isLandscape) {
     return (
       <div className="d-flex justify-content-center flex-column align-items-center vh-100 text-center p-3">
-        <ChangeOrietationSvgComponent className="w-25 mb-3"/>
+        <ChangeOrietationSvgComponent className="w-25 mb-3" />
         <h4>Vire o celular para assinar</h4>
       </div>
     );
@@ -101,7 +133,6 @@ const SignatureCollectStep = ({ handleNext }: Props) => {
           className="py-4"
           handleClick={() => {
             save();
-            handleNext();
             setShowHeader(true)
           }}
           label="Próximo"

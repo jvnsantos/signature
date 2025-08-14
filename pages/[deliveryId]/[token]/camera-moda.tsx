@@ -111,7 +111,7 @@ const CameraModal: React.FC<CameraModalProps> = ({ show, onClose, onCapture }) =
               image={captured}
               crop={crop}
               zoom={zoom}
-              aspect={4 / 3} // proporção que desejar
+              aspect={4 / 4} // proporção que desejar
               onCropChange={setCrop}
               onZoomChange={setZoom}
               onCropComplete={onCropComplete}

@@ -82,8 +82,8 @@ const DriverGeolocalization = ({ handleNext }: Props) => {
 
       trativeResponseUtils({
         response,
-        callBackError: () => handleNext(),
-        callBackSuccess: (message) => console.log({ message })
+        callBackSuccess: () => handleNext(),
+        callBackError: (message) => console.log({ message })
       })
     } catch (error) {
       console.error(error)
@@ -98,7 +98,7 @@ const DriverGeolocalization = ({ handleNext }: Props) => {
 
       const timer = setTimeout(() => {
         handleGetLocation();
-      }, 2000); 
+      }, 100); 
       return () => clearTimeout(timer);
     }
   }, []);

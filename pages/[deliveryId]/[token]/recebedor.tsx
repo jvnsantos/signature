@@ -1,14 +1,13 @@
 "use client";
+import { API_CREATE_RECEIVER } from "@/pages/api/receiver/create-receiver.api";
 import CustomButton from "@/shared/components/custom-button";
+import { useGlobalContext } from "@/shared/context/global-context";
 import { DeliverySvgComponent } from "@/shared/svg-component";
+import inputCpfMaskUtils from "@/shared/utils/input-cpf-mask.utils";
+import trativeResponseUtils from "@/shared/utils/trative-response.utils";
 import { useState } from "react";
 import { Alert, Button, Carousel, Form, Modal } from "react-bootstrap";
 import CameraModal from "./camera-moda";
-import inputCpfMaskUtils from "@/shared/utils/input-cpf-mask.utils";
-import { useGlobalContext } from "@/shared/context/global-context";
-import trativeResponseUtils from "@/shared/utils/trative-response.utils";
-import { API_UPDATE_RECEIVER } from "@/pages/api/delivery/update-receiver.api";
-import { API_CREATE_ATTACHMENTS } from "@/pages/api/attachments/create-attachment.api";
 
 // Tipos
 type Photo = {
@@ -28,11 +27,18 @@ const ReceiverStep = ({ handleNext }: Props) => {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [showCamera, setShowCamera] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleProccess = async () => {
     try {
-      await handleCrateAttachment()
-      await handleUpdateReceiver()
+
+      const response: any = await handleCrateAttachment()
+
+      trativeResponseUtils({
+        response,
+        callBackSuccess: () => { },
+        callBackError: (message) => { setError(message) }
+      })
     } catch (error) {
       console.error(error)
     }
@@ -56,7 +62,6 @@ const ReceiverStep = ({ handleNext }: Props) => {
   const [currentPhoto, setCurrentPhoto] = useState<string | null>(null);
   const [photoType, setPhotoType] = useState("receiver_delivery");
   const [observations, setObservations] = useState("");
-  const [error, setError] = useState<string | null>(null);
 
   const handleCameraCapture = (photoDataUrl: string) => {
     if (photos.length >= 6) return;
@@ -126,44 +131,33 @@ const ReceiverStep = ({ handleNext }: Props) => {
     setError(null);
   };
 
-  const handleUpdateReceiver = async () => {
-    try {
-
-      const response = await API_UPDATE_RECEIVER({
-        deliveryId: delivery.id,
-        payload: {
-          receiverName: formControll.fullName,
-          receiverTaxIdentifier: formControll.document
-        },
-        token: token
-      })
-
-      trativeResponseUtils({
-        response,
-        callBackSuccess: () => {handleNext()},
-        callBackError: (message) => console.error(message)
-      })
-    } catch (error) {
-      console.error(error)
-    }
-  }
 
   const handleCrateAttachment = async () => {
     try {
-      const base64Image = photos[0].image; // "data:image/jpeg;base64,...."
+      const base64Image = photos[0].image;
       const nomeArquivo = "receiver_delivery.jpg";
 
       const blob = await fetch(base64Image).then(res => res.blob());
 
       const formData = new FormData();
       formData.append("image", blob, nomeArquivo);
-      formData.append("name", "receiver_delivery"); // identificador vai no FormData
 
-      await API_CREATE_ATTACHMENTS({
+      const response = await API_CREATE_RECEIVER({
         formData,
         token,
-        deliveryId: delivery.id
+        deliveryId: delivery.id,
+        receiverName: formControll.fullName,
+        receiverTaxIdentifier: formControll.document,
+        type: 'receiver_delivery'
       });
+
+      trativeResponseUtils({
+        response,
+        callBackError: (message) => { setError(message) },
+        callBackSuccess: () => {
+          handleNext()
+        }
+      })
 
       console.log({ photos });
     } catch (error) {
@@ -195,7 +189,7 @@ const ReceiverStep = ({ handleNext }: Props) => {
 
 
       <div>
-
+        {error && <Alert variant="danger">{error}</Alert>}
         <Form.Group className="mb-3">
           <Form.Label>Nome completo <span className="mandatory" /></Form.Label>
           <Form.Control required value={formControll.fullName} onChange={(e) => updateFormCOntroll(e.currentTarget.value, 'fullName')} />

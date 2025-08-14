@@ -6,6 +6,8 @@ import CameraModal from "./camera-moda";
 import CustomButton from "@/shared/components/custom-button";
 import { PicSvgElement } from "@/shared/svg-component";
 import { API_GET_ATTACHMENTS } from "@/pages/api/attachments/get-attachments.api";
+import { API_CREATE_ATTACHMENTS } from "@/pages/api/attachments/create-attachment.api";
+import trativeResponseUtils from "@/shared/utils/trative-response.utils";
 
 // Tipos
 type Photo = {
@@ -22,7 +24,7 @@ type Props = {
 };
 
 const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
-  const { token } = useGlobalContext()
+  const { token, delivery } = useGlobalContext()
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [showCamera, setShowCamera] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -31,7 +33,7 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
   const [photoType, setPhotoType] = useState("");
   const [observations, setObservations] = useState("");
   const [error, setError] = useState<string | null>(null);
-  // Buscar anexos do backend ao montar
+
   useEffect(() => {
     async function loadAttachments() {
       try {
@@ -62,7 +64,7 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
   };
 
   // Salvar ou atualizar foto
-  const handleSavePhoto = () => {
+  const handleSavePhoto = async () => {
     if (!photoType || !currentPhoto) {
       setError("Preencha todos os campos obrigatórios");
       return;
@@ -71,8 +73,8 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
     const description = photoType + (observations ? ` - ${observations}` : "");
     const existingIndex = photos.findIndex((p) => p.image === currentPhoto);
 
+
     if (existingIndex !== -1) {
-      // Atualiza
       const updated = [...photos];
       updated[existingIndex] = {
         ...updated[existingIndex],
@@ -80,9 +82,32 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
         type: photoType,
         observations,
       };
+
       setPhotos(updated);
     } else {
-      // Adiciona
+
+
+      const base64Image = currentPhoto;
+      const file_name = `${photoType}.jpg`;
+
+      const blob = await fetch(base64Image).then(res => res.blob());
+
+      const formData = new FormData();
+      formData.append("image", blob, file_name);
+      formData.append("name", photoType);
+
+      const response = await API_CREATE_ATTACHMENTS({
+        formData,
+        token,
+        deliveryId: delivery.id
+      });
+
+      trativeResponseUtils({
+        response,
+        callBackError: (message) => { setError(message) },
+        callBackSuccess: () => { }
+      })
+
       setPhotos((prev) => [
         ...prev,
         {
@@ -94,6 +119,8 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
         },
       ]);
     }
+
+
 
     handleCloseModal();
   };
@@ -119,7 +146,7 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
     setError(null);
   };
 
-  const canProceed = photos.length >= 2;
+  const canProceed = true;
 
   return (
     <div className="container-fluid p-3">
@@ -130,7 +157,7 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
             <div className="w-100">
               <h3 className="m-0 mt-2">Anexos</h3>
               <span className="text-muted mb-0">
-                Mínimo 2 fotos obrigatórias <span className="mandatory" />
+                max: 5 fotos (opcional)
               </span>
             </div>
           </div>
@@ -153,16 +180,15 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
               src={photo.image}
               alt={photo.description || "Foto"}
               style={{
-                height: "300px",    // altura fixa
+                height: "300px",
                 objectFit: "contain",
-                width: "100%",      // ocupa toda largura do container do carousel
+                width: "100%",
                 cursor: "pointer",
-                backgroundColor: "#f8f9fa", // opcional: fundo leve para destacar
+                backgroundColor: "#f8f9fa",
               }}
               onClick={() => handleOpenEdit(photo)}
             />
             <Carousel.Caption>
-              <p>{photo.description}</p>
               <Button
                 variant="danger"
                 size="sm"
@@ -171,7 +197,7 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
                   handleRemovePhoto(photo.id);
                 }}
               >
-                Remover
+                Deletar
               </Button>
             </Carousel.Caption>
           </Carousel.Item>
@@ -236,9 +262,9 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
               onChange={(e) => setPhotoType(e.target.value)}
             >
               <option value="">Selecione</option>
-              <option value="Foto 1">Foto 1</option>
-              <option value="Foto 2">Foto 2</option>
-              <option value="Foto 3">Foto 3</option>
+              <option value="items_damaged_delivery">Imagem de produto avariado</option>
+              <option value="store_delivary">Imagem do estabelecimento</option>
+              <option value="others_delivery">Outros</option>
             </Form.Control>
           </Form.Group>
 
@@ -253,12 +279,8 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Cancelar
-          </Button>
-          <Button variant="primary" onClick={handleSavePhoto}>
-            Salvar
-          </Button>
+          <CustomButton theme="secundary" label='Cancelar' handleClick={handleCloseModal} />
+          <CustomButton theme="primary" label='Salvar' handleClick={handleSavePhoto} />
         </Modal.Footer>
       </Modal>
     </div >

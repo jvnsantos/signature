@@ -27,7 +27,7 @@ const ListPdfDocument = ({ handleNext }: Props) => {
     setSelectedInvoice(invoiceNumber)
     setErrorViewer(null)
     setSelectedInvoice(invoiceNumber)
-    setCurrentStep(3)
+    setCurrentStep(2)
   }
 
   if (!invoice || invoice.length === 0) {
