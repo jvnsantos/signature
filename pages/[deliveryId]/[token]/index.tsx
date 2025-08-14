@@ -16,6 +16,7 @@ import SignatureCollect from "./assinatura";
 import RenderPdfViewer from "./pdf-viewer";
 import ReceiverStep from "./recebedor";
 import { API_GET_DELIVERY } from "@/pages/api/delivery/get-delivery.api";
+import FinishViwer from "./finish";
 
 const DeliveryPage = () => {
   const router = useRouter();
@@ -188,8 +189,7 @@ const DeliveryPage = () => {
         return (
           <Card className="shadow-light">
             <Card.Body>
-              <h4>Testes concluídos!</h4>
-              <p>Obrigado por utilizar nosso sistema.</p>
+              <FinishViwer />
             </Card.Body>
           </Card>
         );

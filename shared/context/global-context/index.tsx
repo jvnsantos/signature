@@ -31,6 +31,10 @@ export interface GlobalContextData {
 
   token: string;
   setToken: Dispatch<SetStateAction<string>>
+
+
+  finalDocumentUrl: string;
+  setFinalDocumentUrl: Dispatch<SetStateAction<string>>
 }
 
 const GlobalContext = createContext<GlobalContextData>({} as GlobalContextData);
@@ -43,6 +47,7 @@ const GlobalProvider = ({ children }: any) => {
   const [showHeader, setShowHeader] = useState<boolean>(false)
   const [selectedInvoice, setSelectedInvoice] = useState<string>('')
   const [token, setToken] = useState<string>('')
+  const [finalDocumentUrl, setFinalDocumentUrl] = useState<string>('')
   const [currentStep, setCurrentStep] = useState<number>(0)
 
   return (
@@ -63,7 +68,9 @@ const GlobalProvider = ({ children }: any) => {
         currentStep,
         setCurrentStep,
         token,
-        setToken
+        setToken,
+        finalDocumentUrl,
+        setFinalDocumentUrl
       }}
     >
       {children}
