@@ -28,6 +28,7 @@ const ReceiverStep = ({ handleNext }: Props) => {
   const [showCamera, setShowCamera] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [load, setLoad] = useState<boolean>(false)
 
   const handleProccess = async () => {
     try {
@@ -134,6 +135,7 @@ const ReceiverStep = ({ handleNext }: Props) => {
 
   const handleCrateAttachment = async () => {
     try {
+      setLoad(true)
       const base64Image = photos[0].image;
       const nomeArquivo = "receiver_delivery.jpg";
 
@@ -162,11 +164,10 @@ const ReceiverStep = ({ handleNext }: Props) => {
       console.log({ photos });
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoad(false)
     }
   };
-
-
-
 
   const canProceed = photos.length >= 1;
 
@@ -260,6 +261,7 @@ const ReceiverStep = ({ handleNext }: Props) => {
       {/* Botões de ação */}
       <div className="flex justify-between mt-4">
         <CustomButton
+          loading={load}
           className="py-4"
           handleClick={handleProccess}
           disable={!canProceed}

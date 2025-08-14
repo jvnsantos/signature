@@ -14,9 +14,6 @@ export const API_CREATE_ATTACHMENTS = async ({
 }: API_CREATE_ATTACHMENTS_PROPS) => {
   const _token = token ?? getToken();
 
-  // garante que 'name' está no formData
-  if (!formData.has("name")) formData.append("name", "receiver_delivery");
-
   return API_SERVICE(
     `v1/deliveries/origin-driver/attachments/${deliveryId}`,
     {

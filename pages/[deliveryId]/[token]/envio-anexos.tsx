@@ -28,7 +28,7 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [showCamera, setShowCamera] = useState(false);
   const [showModal, setShowModal] = useState(false);
-
+  const [load, setLoad] = useState<boolean>(false)
   const [currentPhoto, setCurrentPhoto] = useState<string | null>(null);
   const [photoType, setPhotoType] = useState("");
   const [observations, setObservations] = useState("");
@@ -65,64 +65,76 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
 
   // Salvar ou atualizar foto
   const handleSavePhoto = async () => {
-    if (!photoType || !currentPhoto) {
-      setError("Preencha todos os campos obrigatórios");
-      return;
-    }
 
-    const description = photoType + (observations ? ` - ${observations}` : "");
-    const existingIndex = photos.findIndex((p) => p.image === currentPhoto);
+    try {
+      setLoad(true)
+      if (!photoType || !currentPhoto) {
+        setError("Preencha todos os campos obrigatórios");
+        return;
+      }
 
-
-    if (existingIndex !== -1) {
-      const updated = [...photos];
-      updated[existingIndex] = {
-        ...updated[existingIndex],
-        description,
-        type: photoType,
-        observations,
-      };
-
-      setPhotos(updated);
-    } else {
+      const description = photoType + (observations ? ` - ${observations}` : "");
+      const existingIndex = photos.findIndex((p) => p.image === currentPhoto);
 
 
-      const base64Image = currentPhoto;
-      const file_name = `${photoType}.jpg`;
-
-      const blob = await fetch(base64Image).then(res => res.blob());
-
-      const formData = new FormData();
-      formData.append("image", blob, file_name);
-      formData.append("name", photoType);
-
-      const response = await API_CREATE_ATTACHMENTS({
-        formData,
-        token,
-        deliveryId: delivery.id
-      });
-
-      trativeResponseUtils({
-        response,
-        callBackError: (message) => { setError(message) },
-        callBackSuccess: () => { }
-      })
-
-      setPhotos((prev) => [
-        ...prev,
-        {
-          id: Date.now(),
-          image: currentPhoto,
+      if (existingIndex !== -1) {
+        const updated = [...photos];
+        updated[existingIndex] = {
+          ...updated[existingIndex],
           description,
           type: photoType,
           observations,
-        },
-      ]);
+        };
+
+        setPhotos(updated);
+      } else {
+
+
+        const base64Image = currentPhoto;
+        const file_name = `${photoType}.jpg`;
+
+        const blob = await fetch(base64Image).then(res => res.blob());
+
+        const formData = new FormData();
+        formData.append("image", blob, file_name);
+        formData.append("name", photoType);
+        formData.append("description", description);
+
+        const response = await API_CREATE_ATTACHMENTS({
+          formData,
+          token,
+          deliveryId: delivery.id
+        });
+
+        trativeResponseUtils({
+          response,
+          callBackError: (message) => { setError(message) },
+          callBackSuccess: () => { }
+        })
+
+        setPhotos((prev) => [
+          ...prev,
+          {
+            id: Date.now(),
+            image: currentPhoto,
+            description,
+            type: photoType,
+            observations,
+          },
+        ]);
+      }
+
+
+
+      handleCloseModal();
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setLoad(false)
     }
 
 
 
-    handleCloseModal();
   };
 
   // Abrir modal para edição de foto existente
@@ -208,6 +220,7 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
       {photos.length < 6 && (
         <div className="text-center mt-3">
           <CustomButton
+            loading={load}
             className="py-4"
             icon={<i className="bi bi-image"></i>}
             theme="secundary"
@@ -220,6 +233,7 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
       {/* Botões de ação */}
       <div className="flex justify-between mt-4">
         <CustomButton
+          loading={load}
           className="py-4"
           handleClick={handleNext}
           disable={!canProceed}

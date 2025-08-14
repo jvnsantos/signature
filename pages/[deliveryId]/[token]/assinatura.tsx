@@ -17,6 +17,8 @@ const SignatureCollectStep = ({ handleNext }: Props) => {
   const sigRef = useRef<SignatureCanvas>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const [load, setLoad] = useState<boolean>(false)
+
   const [isLandscape, setIsLandscape] = useState(true);
   const [canvasSize, setCanvasSize] = useState({ width: 300, height: 150 });
 
@@ -62,10 +64,12 @@ const SignatureCollectStep = ({ handleNext }: Props) => {
     }
 
     try {
-      const dataUrl = sigRef.current.toDataURL("image/png");
-      const blob = await fetch(dataUrl).then(res => res.blob());
-      const fileName = "signature.png";
+      setLoad(true)
+      const base64Image = sigRef.current.toDataURL("image/png");
 
+      const blob = await fetch(base64Image).then(res => res.blob());
+      const fileName = "signature.png";
+      console.log(base64Image)
       const formData = new FormData();
       formData.append("image", blob, fileName);
 
@@ -86,6 +90,8 @@ const SignatureCollectStep = ({ handleNext }: Props) => {
       });
     } catch (err) {
       console.error("Erro ao salvar assinatura:", err);
+    } finally {
+      setLoad(false)
     }
   };
 
@@ -130,6 +136,7 @@ const SignatureCollectStep = ({ handleNext }: Props) => {
 
       <div className="flex justify-between mt-4">
         <CustomButton
+          loading={load}
           className="py-4"
           handleClick={() => {
             save();
