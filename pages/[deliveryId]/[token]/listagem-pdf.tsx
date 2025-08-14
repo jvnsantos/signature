@@ -30,16 +30,6 @@ const ListPdfDocument = ({ handleNext }: Props) => {
     setCurrentStep(3)
   }
 
-  // const handleBackToList = () => {
-  //   setCurrentView('list')
-  //   setSelectedInvoice('')
-  //   setIsLoadingViewer(true)
-  //   setErrorViewer(null)
-  // }
-
-
-
-
   if (!invoice || invoice.length === 0) {
     return (
       <div className="d-flex flex-column align-items-center justify-content-center text-center" style={{ minHeight: '400px' }}>
@@ -73,7 +63,6 @@ const ListPdfDocument = ({ handleNext }: Props) => {
           </div>
         </div>
 
-        {/* Lista de PDFs */}
         <div className="row">
           <div className="col-12">
             {filteredPdfs.length === 0 && searchTerm ? (

@@ -1,11 +1,11 @@
 "use client";
-import { API_GET_ATTACHMENTS } from "@/pages/api/delivery";
 import { useGlobalContext } from "@/shared/context/global-context";
 import { useEffect, useState } from "react";
 import { Alert, Button, Carousel, Form, Modal } from "react-bootstrap";
 import CameraModal from "./camera-moda";
 import CustomButton from "@/shared/components/custom-button";
 import { PicSvgElement } from "@/shared/svg-component";
+import { API_GET_ATTACHMENTS } from "@/pages/api/attachments/get-attachments.api";
 
 // Tipos
 type Photo = {
@@ -60,8 +60,6 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
     setShowCamera(false);
     setShowModal(true);
   };
-
-
 
   // Salvar ou atualizar foto
   const handleSavePhoto = () => {

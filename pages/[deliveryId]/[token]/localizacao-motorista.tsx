@@ -1,5 +1,5 @@
 'use client'
-import { API_UPDATE_LOCATION } from "@/pages/api/delivery"
+import { API_UPDATE_LOCATION } from "@/pages/api/delivery/update-location.api"
 import CustomButton from "@/shared/components/custom-button"
 import { useGlobalContext } from "@/shared/context/global-context"
 import trativeResponseUtils from "@/shared/utils/trative-response.utils"

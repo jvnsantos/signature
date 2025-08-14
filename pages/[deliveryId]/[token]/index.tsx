@@ -15,7 +15,7 @@ import DropAttachments from "./envio-anexos";
 import SignatureCollect from "./assinatura";
 import RenderPdfViewer from "./pdf-viewer";
 import ReceiverStep from "./recebedor";
-import { API_GET_DELIVERY } from "@/pages/api/delivery";
+import { API_GET_DELIVERY } from "@/pages/api/delivery/get-delivery.api";
 
 const DeliveryPage = () => {
   const router = useRouter();

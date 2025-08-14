@@ -5,9 +5,10 @@ import { useState } from "react";
 import { Alert, Button, Carousel, Form, Modal } from "react-bootstrap";
 import CameraModal from "./camera-moda";
 import inputCpfMaskUtils from "@/shared/utils/input-cpf-mask.utils";
-import { API_CREATE_ATTACHMENTS, API_UPDATE_RECEIVER } from "@/pages/api/delivery";
 import { useGlobalContext } from "@/shared/context/global-context";
 import trativeResponseUtils from "@/shared/utils/trative-response.utils";
+import { API_UPDATE_RECEIVER } from "@/pages/api/delivery/update-receiver.api";
+import { API_CREATE_ATTACHMENTS } from "@/pages/api/attachments/create-attachment.api";
 
 // Tipos
 type Photo = {
