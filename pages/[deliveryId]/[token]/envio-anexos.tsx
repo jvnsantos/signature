@@ -2,14 +2,16 @@
 import { API_CREATE_ATTACHMENTS } from "@/pages/api/attachments/create-attachment.api";
 import { API_DELETE_ATTACHMENTS } from "@/pages/api/attachments/delete-attachments.api";
 import { API_GET_ATTACHMENTS } from "@/pages/api/attachments/get-attachments.api";
+import { API_CANCEL_DELIVERY } from "@/pages/api/delivery/cancel-delivary.api";
 import CustomButton from "@/shared/components/custom-button";
+import StepsIndicator from "@/shared/components/step-marker";
 import { useGlobalContext } from "@/shared/context/global-context";
 import { PicSvgElement } from "@/shared/svg-component";
 import trativeResponseUtils from "@/shared/utils/trative-response.utils";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Alert, Button, Form, Modal } from "react-bootstrap";
 import CameraModal from "./camera-moda";
-import StepsIndicator from "@/shared/components/step-marker";
 
 // Tipos
 type Photo = {
@@ -28,7 +30,7 @@ type Props = {
 };
 
 const PhotoCollector = ({ handleNext, deliveryId, currentStep, steps }: Props) => {
-  const { token, delivery } = useGlobalContext()
+  const { token, delivery, reasonToCancel } = useGlobalContext()
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [showCamera, setShowCamera] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -39,15 +41,15 @@ const PhotoCollector = ({ handleNext, deliveryId, currentStep, steps }: Props) =
   const [photoType, setPhotoType] = useState("");
   const [observations, setObservations] = useState("");
   const [error, setError] = useState<string | null>(null);
-
+  const router = useRouter()
   // Função para traduzir os tipos de foto
   const getPhotoTypeLabel = (type: string) => {
     switch (type) {
-      case "items_damaged_delivery":
+      case "ITEMS_DAMAGED_DELIVERY":
         return "Produto avariado";
-      case "store_delivary":
+      case "STORE_DELIVERY":
         return "Estabelecimento";
-      case "others_delivery":
+      case "OTHERS_DELIVERY":
         return "Outros";
       default:
         return type;
@@ -69,6 +71,22 @@ const PhotoCollector = ({ handleNext, deliveryId, currentStep, steps }: Props) =
       setPhotos(mappedPhotos);
     } catch (error) {
       console.error("Erro ao carregar anexos:", error);
+    }
+  }
+
+  const _handleNext = async () => {
+    if (reasonToCancel.reasonNotDelivery) {
+      const response = await API_CANCEL_DELIVERY({ deliveryId: delivery.id, token, payload: { reasonNotDelivery: reasonToCancel.reasonNotDelivery, observation: reasonToCancel.observation } })
+
+      trativeResponseUtils({
+        response,
+        callBackError: (msg) => { setError(msg) },
+        callBackSuccess: () => {
+          router.replace("/cancelada");
+        }
+      })
+    } else {
+      handleNext()
     }
   }
 
@@ -274,7 +292,7 @@ const PhotoCollector = ({ handleNext, deliveryId, currentStep, steps }: Props) =
         <CustomButton
           loading={load}
           className="py-4"
-          handleClick={handleNext}
+          handleClick={_handleNext}
           disable={!canProceed}
           label='Próximo'
         />
@@ -315,9 +333,9 @@ const PhotoCollector = ({ handleNext, deliveryId, currentStep, steps }: Props) =
               onChange={(e) => setPhotoType(e.target.value)}
             >
               <option value="">Selecione</option>
-              <option value="items_damaged_delivery">Imagem de produto avariado</option>
-              <option value="store_delivary">Imagem do estabelecimento</option>
-              <option value="others_delivery">Outros</option>
+              <option value="ITEMS_DAMAGED_DELIVERY">Imagem de produto avariado</option>
+              <option value="STORE_DELIVERY">Imagem do estabelecimento</option>
+              <option value="OTHERS_DELIVERY">Outros</option>
             </Form.Control>
           </Form.Group>
 
