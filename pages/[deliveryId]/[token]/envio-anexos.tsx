@@ -38,13 +38,17 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
     async function loadAttachments() {
       try {
         const response = await API_GET_ATTACHMENTS({ deliveryId, token });
-        const mappedPhotos: Photo[] = response.map((att: any) => ({
-          id: Number(att.deliveryAttachmentId),
-          image: att.urlAttachment,
-          description: att.description,
-          type: att.name || "",
-          observations: att.observations || "",
-        }));
+        const mappedPhotos: Photo[] = response.filter(e => e.name !== 'RECEIVER_DELIVERY').map((att: any) => {
+          console.log({ att })
+          return ({
+            id: Number(att.deliveryAttachmentId),
+            image: att.urlAttachment,
+            description: att.description,
+            type: att.name || "",
+            observations: att.observations || "",
+          })
+        }
+        );
         setPhotos(mappedPhotos);
       } catch (error) {
         console.error("Erro ao carregar anexos:", error);

@@ -61,7 +61,7 @@ const ReceiverStep = ({ handleNext }: Props) => {
   }
 
   const [currentPhoto, setCurrentPhoto] = useState<string | null>(null);
-  const [photoType, setPhotoType] = useState("receiver_delivery");
+  const [photoType, setPhotoType] = useState("RECEIVER_DELIVERY");
   const [observations, setObservations] = useState("");
 
   const handleCameraCapture = (photoDataUrl: string) => {
@@ -90,7 +90,7 @@ const ReceiverStep = ({ handleNext }: Props) => {
       updated[existingIndex] = {
         ...updated[existingIndex],
         description,
-        type: 'receiver_delivery',
+        type: 'RECEIVER_DELIVERY',
         observations,
       };
       setPhotos(updated);
@@ -102,7 +102,7 @@ const ReceiverStep = ({ handleNext }: Props) => {
           id: Date.now(),
           image: currentPhoto,
           description,
-          type: 'receiver_delivery',
+          type: 'RECEIVER_DELIVERY',
           observations,
         },
       ]);
@@ -137,7 +137,7 @@ const ReceiverStep = ({ handleNext }: Props) => {
     try {
       setLoad(true)
       const base64Image = photos[0].image;
-      const nomeArquivo = "receiver_delivery.jpg";
+      const nomeArquivo = "RECEIVER_DELIVERY.jpg";
 
       const blob = await fetch(base64Image).then(res => res.blob());
 
@@ -150,7 +150,7 @@ const ReceiverStep = ({ handleNext }: Props) => {
         deliveryId: delivery.id,
         receiverName: formControll.fullName,
         receiverTaxIdentifier: formControll.document,
-        type: 'receiver_delivery'
+        type: 'RECEIVER_DELIVERY'
       });
 
       trativeResponseUtils({
@@ -318,7 +318,7 @@ const ReceiverStep = ({ handleNext }: Props) => {
               disabled
               onChange={(e) => setPhotoType(e.target.value)}
             >
-              <option value="receiver_delivery">Foto do recebedor</option>
+              <option value="RECEIVER_DELIVERY">Foto do recebedor</option>
             </Form.Control>
           </Form.Group>
 
