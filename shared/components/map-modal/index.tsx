@@ -22,7 +22,7 @@ const MapModal = ({
   width = 800,
   height = 450
 }: MapModalProps) => {
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY as string;
+  const apiKey = process.env.SECRETS_SCAN_OMIT_PATHS as string;
 
   const staticMapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${latitude},${longitude}&zoom=${zoom}&size=${width}x${height}&maptype=roadmap&markers=color:red|${latitude},${longitude}&key=${apiKey}`;
 
