@@ -59,7 +59,7 @@ const PhotoCollector = ({ handleNext, deliveryId, currentStep, steps }: Props) =
   async function loadAttachments() {
     try {
       const response = await API_GET_ATTACHMENTS({ deliveryId, token });
-      const mappedPhotos: Photo[] = response.filter(e => e.name !== 'RECEIVER_DELIVERY').map((att: any) => {
+      const mappedPhotos: Photo[] = response.filter(e => e.name !== 'RECEIVER_DELIVERY' && e.name !== 'LOCATION_MAP_DELIVERY').map((att: any) => {
         return ({
           id: att.deliveryAttachmentId,
           image: att.urlAttachment,

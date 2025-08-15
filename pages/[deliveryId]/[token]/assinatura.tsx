@@ -2,20 +2,21 @@
 import { API_CREATE_SIGNATURE } from "@/pages/api/signature/create-signature.api";
 import CustomButton from "@/shared/components/custom-button";
 import { useGlobalContext } from "@/shared/context/global-context";
-import { ChangeOrietationSvgComponent, SignatureSvgComponent } from "@/shared/svg-component";
+import { ChangeOrietationSvgComponent } from "@/shared/svg-component";
 import trativeResponseUtils from "@/shared/utils/trative-response.utils";
-import { useRef, useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { useEffect, useRef, useState } from "react";
 import SignatureCanvas from "react-signature-canvas";
 
 type Props = {
   handleNext: () => void;
 };
 
-const SignatureCollectStep = ({ handleNext }: Props) => {
+const SignatureCollectStep = ({ }: Props) => {
   const { token, delivery, setFinalDocumentUrl } = useGlobalContext();
   const { setShowHeader } = useGlobalContext();
   const sigRef = useRef<SignatureCanvas>(null);
-
+  const router = useRouter()
   const [load, setLoad] = useState(false);
   const [isLandscape, setIsLandscape] = useState(true);
   const [windowHeight, setWindowHeight] = useState(0);
@@ -63,7 +64,9 @@ const SignatureCollectStep = ({ handleNext }: Props) => {
         callBackError: console.error,
         callBackSuccess: (res) => {
           setFinalDocumentUrl(res?.data?.urlSignatureCompleted);
-          handleNext();
+
+          router.replace("/finalizada");
+          // handleNext();
         },
       });
     } catch (err) {
@@ -83,20 +86,20 @@ const SignatureCollectStep = ({ handleNext }: Props) => {
   }
 
   // Calcula altura do canvas considerando header e botões
-  const headerHeight = 80;
+  const headerHeight = 40;
   const buttonsHeight = 100;
-  const canvasHeight = windowHeight - headerHeight - buttonsHeight - 40; // margem extra 40px
+  const canvasHeight = windowHeight - headerHeight - buttonsHeight; // margem extra 40px
   const canvasWidth = windowWidth - 40;
 
   return (
     <div
-      className="d-flex flex-column align-items-center justify-between p-3"
+      className="d-flex flex-column align-items-center justify-between"
       style={{ height: windowHeight - headerHeight }}
     >
-      <div className="d-flex align-items-center mb-3 w-100">
-        <SignatureSvgComponent style={{ height: 50 }} />
-        <div className="ms-2">
-          <h3 className="m-0">Assinatura</h3>
+      <div className="d-flex align-items-center mb-1 w-100">
+        {/* <SignatureSvgComponent style={{ height: 50 }} /> */}
+        <div className="ms-0">
+          {/* <h3 className="m-0">Assinatura</h3> */}
           <span className="text-muted">Assinatura do recebedor</span>
         </div>
       </div>
@@ -111,8 +114,8 @@ const SignatureCollectStep = ({ handleNext }: Props) => {
         }}
       />
 
-      <div className="d-flex justify-content-between mt-3 w-100">
-        <CustomButton theme="secundary" label="Limpar" handleClick={clear} />
+      <div className="d-flex justify-content-center   gap-3 mt-3 w-100">
+        <CustomButton icon={<i className="bi bi-eraser-fill"></i>} theme="secundary" label="Limpar" handleClick={clear} />
         <CustomButton
           loading={load}
           label="Próximo"

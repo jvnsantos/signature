@@ -191,7 +191,7 @@ const DeliveryPage = () => {
 
       case 6:
         return (
-          <div className="content-holder">
+          <div className="">
             <SignatureCollect handleNext={() => setCurrentStep(7)} />
           </div>
         );
