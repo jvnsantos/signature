@@ -24,6 +24,7 @@ const DeliveryPage = () => {
   const { deliveryId, token } = router.query;
   const [showMap, setShowMap] = useState(false);
   const [authorized, setAuthorized] = useState<boolean | null>(null);
+  const [stepKey, setStepKey] = useState(0);
 
   const validate = async () => {
     try {
@@ -200,6 +201,13 @@ const DeliveryPage = () => {
 
 
   useEffect(() => {
+    // toda vez que o step mudar, atualiza a key para resetar a animação
+    setStepKey(prev => prev + 1);
+  }, [currentStep]);
+
+
+
+  useEffect(() => {
     if (!deliveryId || !token) return;
     validate();
   }, [deliveryId, token]);
@@ -210,8 +218,9 @@ const DeliveryPage = () => {
 
   return (
     <Fragment>
-      {renderStepContent()}
-
+      <div key={stepKey} className="step-transition">
+        {renderStepContent()}
+      </div>
       <MapModal
         show={showMap}
         onClose={() => setShowMap(false)}
