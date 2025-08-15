@@ -214,7 +214,7 @@ const PhotoCollector = ({ handleNext, deliveryId, currentStep, steps }: Props) =
             <div className="w-100">
               <h3 className="m-0 mt-2">Anexos</h3>
               <span className="text-muted mb-0">
-                {photos.length - 1}/5
+                {photos.length}/5
               </span>
             </div>
           </div>
@@ -252,7 +252,12 @@ const PhotoCollector = ({ handleNext, deliveryId, currentStep, steps }: Props) =
                   <div className="flex-grow-1">
                     <h6 className="mb-1 fw-bold">{getPhotoTypeLabel(photo.type)}</h6>
                     {photo.description && (
-                      <p className="mb-0 text-muted small">{photo.description}</p>
+                      <p
+                        className="mb-0 text-muted small"
+                        style={{ wordBreak: "break-word", maxWidth: "250px" }}
+                      >
+                        {photo.description}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -328,6 +333,7 @@ const PhotoCollector = ({ handleNext, deliveryId, currentStep, steps }: Props) =
           <Form.Group className="mb-3">
             <Form.Label>Tipo de Foto *</Form.Label>
             <Form.Control
+              disabled={!!photos.find((p) => p.image === currentPhoto)}
               as="select"
               value={photoType}
               onChange={(e) => setPhotoType(e.target.value)}
@@ -342,6 +348,7 @@ const PhotoCollector = ({ handleNext, deliveryId, currentStep, steps }: Props) =
           <Form.Group className="mb-3">
             <Form.Label>Observações</Form.Label>
             <Form.Control
+              disabled={!!photos.find((p) => p.image === currentPhoto)}
               type="text"
               placeholder="Digite observações (opcional)"
               value={observations}
@@ -349,10 +356,11 @@ const PhotoCollector = ({ handleNext, deliveryId, currentStep, steps }: Props) =
             />
           </Form.Group>
         </Modal.Body>
-        <Modal.Footer>
+        {!photos.find((p) => p.image === currentPhoto) && <Modal.Footer>
           <CustomButton theme="secundary" label='Cancelar' handleClick={handleCloseModal} />
           <CustomButton theme="primary" label='Salvar' handleClick={handleSavePhoto} />
-        </Modal.Footer>
+        </Modal.Footer>}
+
       </Modal>
 
       {/* Modal de confirmação de exclusão */}
@@ -378,7 +386,12 @@ const PhotoCollector = ({ handleNext, deliveryId, currentStep, steps }: Props) =
                 <div>
                   <h6 className="mb-1">{getPhotoTypeLabel(photoToDelete.type)}</h6>
                   {photoToDelete.description && (
-                    <p className="mb-0 text-muted small">{photoToDelete.description}</p>
+                    <p
+                      className="mb-0 text-muted small"
+                      style={{ wordBreak: "break-word", maxWidth: "250px" }}
+                    >
+                      {photoToDelete.description}
+                    </p>
                   )}
                 </div>
               </div>
