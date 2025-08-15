@@ -61,7 +61,7 @@ const RenderPdfViewer = ({ handleBack }: Props) => {
         )}
 
         <iframe
-          src={`${selectedPdf.url}#zoom=${1}&toolbar=1&navpanes=1&scrollbar=1`}
+          src={`https://docs.google.com/viewer?url=${encodeURIComponent(selectedPdf.url)}&embedded=true`}
           width="100%"
           height="100%"
           style={{
@@ -70,9 +70,6 @@ const RenderPdfViewer = ({ handleBack }: Props) => {
           }}
           title={`PDF: ${selectedPdf.invoice}`}
           onLoad={() => setIsLoadingViewer(false)}
-          onError={() => {
-            setIsLoadingViewer(false)
-          }}
         />
       </div>
 
