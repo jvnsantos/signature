@@ -9,7 +9,7 @@ type Props = {
   handleNext: () => void
 }
 const DriverGeolocalization = ({ handleNext }: Props) => {
-  const { delivery, token, setShowHeader } = useGlobalContext()
+  const { delivery, token, setShowHeader, reasonToCancel, setCurrentStep } = useGlobalContext()
 
   const handleGetLocation = async () => {
     if (!navigator.geolocation) {
@@ -53,7 +53,15 @@ const DriverGeolocalization = ({ handleNext }: Props) => {
 
       trativeResponseUtils({
         response,
-        callBackSuccess: () => handleNext(),
+        callBackSuccess: () => {
+
+          if (reasonToCancel.reasonNotDelivery) {
+            setCurrentStep(4)
+          } else {
+
+            handleNext()
+          }
+        },
         callBackError: (message) => console.log({ message })
       })
     } catch (error) {

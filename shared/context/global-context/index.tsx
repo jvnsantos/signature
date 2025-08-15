@@ -5,7 +5,7 @@ import {
   useContext,
   useState,
 } from "react";
-import { Client, Company, Delivery, Invoice } from "./interfaces";
+import { Client, Company, Delivery, Invoice, ReaseonToCancelProps } from "./interfaces";
 
 export interface GlobalContextData {
   setClient: Dispatch<SetStateAction<Client>>;
@@ -35,6 +35,9 @@ export interface GlobalContextData {
 
   finalDocumentUrl: string;
   setFinalDocumentUrl: Dispatch<SetStateAction<string>>
+
+  reasonToCancel: ReaseonToCancelProps
+  setReasonToCancel: Dispatch<SetStateAction<ReaseonToCancelProps>>
 }
 
 const GlobalContext = createContext<GlobalContextData>({} as GlobalContextData);
@@ -43,11 +46,13 @@ const GlobalProvider = ({ children }: any) => {
   const [client, setClient] = useState({} as Client);
   const [company, setCompany] = useState({} as Company);
   const [delivery, setDelivery] = useState({} as Delivery);
+  const [reasonToCancel, setReasonToCancel] = useState({} as ReaseonToCancelProps);
   const [invoice, setInvoice] = useState([] as Invoice[]);
   const [showHeader, setShowHeader] = useState<boolean>(false)
   const [selectedInvoice, setSelectedInvoice] = useState<string>('')
   const [token, setToken] = useState<string>('')
   const [finalDocumentUrl, setFinalDocumentUrl] = useState<string>('')
+
   const [currentStep, setCurrentStep] = useState<number>(0)
 
   return (
@@ -70,7 +75,9 @@ const GlobalProvider = ({ children }: any) => {
         token,
         setToken,
         finalDocumentUrl,
-        setFinalDocumentUrl
+        setFinalDocumentUrl,
+        reasonToCancel,
+        setReasonToCancel
       }}
     >
       {children}

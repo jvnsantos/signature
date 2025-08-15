@@ -102,3 +102,8 @@ export type Invoice = {
   ordering: number;
   url: string;
 };
+
+export type ReaseonToCancelProps = {
+  reasonNotDelivery: string;
+  observation?: string;
+};

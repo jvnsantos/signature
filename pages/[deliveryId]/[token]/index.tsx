@@ -17,6 +17,7 @@ import ListPdfDocument from "./listagem-pdf";
 import DriverGeolocalization from "./localizacao-motorista";
 import RenderPdfViewer from "./pdf-viewer";
 import ReceiverStep from "./recebedor";
+import JustificativaCancelamento from "./justificativa-cancelamento";
 
 const DeliveryPage = () => {
   const router = useRouter();
@@ -140,7 +141,7 @@ const DeliveryPage = () => {
               <CustomButton
                 theme="tertiary"
                 label='Cliente não localizado?'
-                handleClick={() => { }}
+                handleClick={() => setCurrentStep(8)}
               />
             </div>
           </div>
@@ -200,6 +201,20 @@ const DeliveryPage = () => {
         return (
           <div className="content-holder">
             <FinishViwer />
+          </div>
+        );
+      // Justificativa cancelamento
+      case 8:
+        return (
+          <div className="content-holder">
+            <JustificativaCancelamento handleBack={() => setCurrentStep(0)}/>
+          </div>
+        );
+
+      case 9:
+        return (
+          <div className="content-holder">
+          teste
           </div>
         );
       default:
