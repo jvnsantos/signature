@@ -31,12 +31,12 @@ const FinishViwer = () => {
           overflow: 'hidden'
         }}
       >
-        
+
         {isLoadingViewer && (
           <div className="position-absolute top-50 start-50 translate-middle">
             <div className="d-flex flex-column align-items-center">
               <div className="spinner-border text-primary mb-2" role="status"></div>
-              <span>Carregando PDF...</span>
+              <span>Carregando PDF ...</span>
             </div>
           </div>
         )}
