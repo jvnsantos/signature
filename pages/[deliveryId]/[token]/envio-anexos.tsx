@@ -7,7 +7,7 @@ import { useGlobalContext } from "@/shared/context/global-context";
 import { PicSvgElement } from "@/shared/svg-component";
 import trativeResponseUtils from "@/shared/utils/trative-response.utils";
 import { useEffect, useState } from "react";
-import { Alert, Button, Carousel, Form, Modal } from "react-bootstrap";
+import { Alert, Button, Form, Modal } from "react-bootstrap";
 import CameraModal from "./camera-moda";
 
 // Tipos
@@ -29,12 +29,27 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [showCamera, setShowCamera] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [photoToDelete, setPhotoToDelete] = useState<Photo | null>(null);
   const [load, setLoad] = useState<boolean>(false)
   const [currentPhoto, setCurrentPhoto] = useState<string | null>(null);
   const [photoType, setPhotoType] = useState("");
   const [observations, setObservations] = useState("");
   const [error, setError] = useState<string | null>(null);
 
+  // Função para traduzir os tipos de foto
+  const getPhotoTypeLabel = (type: string) => {
+    switch (type) {
+      case "items_damaged_delivery":
+        return "Produto avariado";
+      case "store_delivary":
+        return "Estabelecimento";
+      case "others_delivery":
+        return "Outros";
+      default:
+        return type;
+    }
+  };
 
   async function loadAttachments() {
     try {
@@ -43,9 +58,8 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
         return ({
           id: att.deliveryAttachmentId,
           image: att.urlAttachment,
-          description: att.description,
+          description: att.description || "",
           type: att.name || "",
-          observations: att.observations || "",
         })
       }
       );
@@ -78,8 +92,6 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
         setError("Preencha todos os campos obrigatórios");
         return;
       }
-      const description = photoType + (observations ? ` - ${observations}` : "");
-
       const base64Image = currentPhoto;
       const file_name = `${photoType}.jpg`;
 
@@ -88,7 +100,11 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
       const formData = new FormData();
       formData.append("image", blob, file_name);
       formData.append("name", photoType);
-      formData.append("description", description);
+
+      if(observations){
+        formData.append("description", observations);
+      }
+ 
 
       const response = await API_CREATE_ATTACHMENTS({
         formData,
@@ -105,11 +121,10 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
           setPhotos((prev) => [
             ...prev,
             {
-              id: data?.id,
+              id: data?.deliveryAttachmentId || data?.id,
               image: currentPhoto,
-              description,
+              description: observations,
               type: photoType,
-              observations,
             },
           ]);
         }
@@ -121,26 +136,36 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
     } finally {
       setLoad(false)
     }
-
-
-
   };
 
   // Abrir modal para edição de foto existente
   const handleOpenEdit = (photo: Photo) => {
     setCurrentPhoto(photo.image);
     setPhotoType(photo.type);
-    setObservations(photo.observations || "");
+    setObservations(photo.description || "");
     setShowModal(true);
   };
 
-  // Remover foto
-  const handleRemovePhoto = async (photo: Photo) => {
+  // Abrir modal de confirmação de exclusão
+  const handleOpenDeleteModal = (photo: Photo) => {
+    setPhotoToDelete(photo);
+    setShowDeleteModal(true);
+  };
+
+  // Confirmar remoção de foto
+  const handleConfirmDelete = async () => {
+    if (!photoToDelete) return;
+    
     try {
-      await API_DELETE_ATTACHMENTS({ token, deliveryAttachmentId: photo.id })
-      await loadAttachments()
+      setLoad(true);
+      await API_DELETE_ATTACHMENTS({ token, deliveryAttachmentId: photoToDelete.id });
+      await loadAttachments();
+      setShowDeleteModal(false);
+      setPhotoToDelete(null);
     } catch (error) {
-      console.error(error)
+      console.error(error);
+    } finally {
+      setLoad(false);
     }
   };
 
@@ -150,6 +175,11 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
     setPhotoType("");
     setObservations("");
     setError(null);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false);
+    setPhotoToDelete(null);
   };
 
   const canProceed = true;
@@ -163,52 +193,63 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
             <div className="w-100">
               <h3 className="m-0 mt-2">Anexos</h3>
               <span className="text-muted mb-0">
-                max: 5 fotos (opcional)
+                {photos.length -1}/5
               </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Grade de fotos */}
-      <Carousel
-        variant="dark"
-        interval={null}
-        indicators={true}
-        nextLabel=""
-        prevLabel=""
-        style={{ maxWidth: "400px", margin: "0 auto" }} // centraliza o carousel e limita largura
-      >
-        {photos.map((photo) => (
-          <Carousel.Item key={photo.id}>
-            <img
-              className="d-block mx-auto"
-              src={photo.image}
-              alt={photo.description || "Foto"}
-              style={{
-                height: "300px",
-                objectFit: "contain",
-                width: "100%",
-                cursor: "pointer",
-                backgroundColor: "#f8f9fa",
-              }}
-              onClick={() => handleOpenEdit(photo)}
-            />
-            <Carousel.Caption>
-              <Button
-                variant="danger"
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleRemovePhoto(photo);
-                }}
-              >
-                Deletar
-              </Button>
-            </Carousel.Caption>
-          </Carousel.Item>
-        ))}
-      </Carousel>
+      {/* Lista de fotos */}
+      <div className="mb-4">
+        {photos.length === 0 ? (
+          <div className="text-center text-muted py-4">
+            <i className="bi bi-image fs-1"></i>
+            <p className="mt-2">Nenhuma foto adicionada ainda</p>
+          </div>
+        ) : (
+          <div className="list-group">
+            {photos.map((photo) => (
+              <div key={photo.id} className="list-group-item d-flex align-items-center justify-content-between py-3">
+                <div className="d-flex align-items-center gap-3 flex-grow-1">
+                  {/* Miniatura */}
+                  <img
+                    src={photo.image}
+                    alt={photo.description || "Foto"}
+                    className="rounded"
+                    style={{
+                      width: "60px",
+                      height: "60px",
+                      objectFit: "cover",
+                      cursor: "pointer",
+                      border: "1px solid #dee2e6"
+                    }}
+                    onClick={() => handleOpenEdit(photo)}
+                  />
+                  
+                  {/* Informações da foto */}
+                  <div className="flex-grow-1">
+                    <h6 className="mb-1 fw-bold">{getPhotoTypeLabel(photo.type)}</h6>
+                    {photo.description && (
+                      <p className="mb-0 text-muted small">{photo.description}</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Botão deletar */}
+                <Button
+                  variant="outline-danger"
+                  size="sm"
+                  onClick={() => handleOpenDeleteModal(photo)}
+                  className="ms-2"
+                >
+                  <i className="bi bi-trash"></i>
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Botão adicionar foto */}
       {photos.length < 6 && (
@@ -289,6 +330,53 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
         <Modal.Footer>
           <CustomButton theme="secundary" label='Cancelar' handleClick={handleCloseModal} />
           <CustomButton theme="primary" label='Salvar' handleClick={handleSavePhoto} />
+        </Modal.Footer>
+      </Modal>
+
+      {/* Modal de confirmação de exclusão */}
+      <Modal show={showDeleteModal} onHide={handleCloseDeleteModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirmar Exclusão</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {photoToDelete && (
+            <div>
+              <p>Tem certeza que deseja excluir esta foto?</p>
+              <div className="d-flex align-items-center gap-3 p-3 bg-light rounded">
+                <img
+                  src={photoToDelete.image}
+                  alt="Foto a ser excluída"
+                  className="rounded"
+                  style={{
+                    width: "80px",
+                    height: "80px",
+                    objectFit: "cover"
+                  }}
+                />
+                <div>
+                  <h6 className="mb-1">{getPhotoTypeLabel(photoToDelete.type)}</h6>
+                  {photoToDelete.description && (
+                    <p className="mb-0 text-muted small">{photoToDelete.description}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <CustomButton 
+            theme="tertiary" 
+            label='Cancelar' 
+            handleClick={handleCloseDeleteModal}
+            disable={load}
+          />
+          <CustomButton 
+            theme="red"
+            variant="soft" 
+            label='Excluir' 
+            handleClick={handleConfirmDelete}
+            loading={load}
+          />
         </Modal.Footer>
       </Modal>
     </div >
