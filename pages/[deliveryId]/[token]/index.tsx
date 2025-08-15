@@ -41,6 +41,17 @@ const DeliveryPage = () => {
         callBackError: () => { router.replace("/unauthorized"); },
         callBackSuccess: (response) => {
           const data = response.data
+
+          if (data.delivery.status === 'COMPLETED') {
+            router.replace("/finalizada");
+            return
+          }
+
+            if (data.delivery.status !== 'PENDING') {
+            router.replace("/invalida");
+            return
+          }
+   
           setInvoice(data.invoices)
           setCompany(data.company)
           setDelivery(data.delivery)
@@ -201,10 +212,8 @@ const DeliveryPage = () => {
 
 
   useEffect(() => {
-    // toda vez que o step mudar, atualiza a key para resetar a animação
     setStepKey(prev => prev + 1);
   }, [currentStep]);
-
 
 
   useEffect(() => {

@@ -24,7 +24,7 @@ const LoadingPage = () => {
         // Faz fade-in
         setFade(true)
       }, 300) // tempo do fade-out
-    }, 2500) // tempo total para trocar frase
+    }, 1000) // tempo total para trocar frase
 
     return () => clearInterval(interval)
   }, [words.length])
@@ -39,9 +39,10 @@ const LoadingPage = () => {
         height: '100vh',
         background: '#fff'
       }}>
-        <PayIPIcon style={{ width: 80, height: 80, marginBottom: 20 }} />
+        <PayIPIcon style={{ width: 80, height: 80, marginBottom: 20 }} className="mb-3" />
 
         <p
+        className="text-center"
           style={{
             fontSize: '1.2rem',
             color: '#333',
