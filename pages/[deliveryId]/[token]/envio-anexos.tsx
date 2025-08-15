@@ -9,6 +9,7 @@ import trativeResponseUtils from "@/shared/utils/trative-response.utils";
 import { useEffect, useState } from "react";
 import { Alert, Button, Form, Modal } from "react-bootstrap";
 import CameraModal from "./camera-moda";
+import StepsIndicator from "@/shared/components/step-marker";
 
 // Tipos
 type Photo = {
@@ -20,11 +21,13 @@ type Photo = {
 };
 
 type Props = {
+  steps: string[];
+  currentStep: number;
   handleNext: () => void;
   deliveryId: string; // usado para buscar anexos
 };
 
-const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
+const PhotoCollector = ({ handleNext, deliveryId, currentStep, steps }: Props) => {
   const { token, delivery } = useGlobalContext()
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [showCamera, setShowCamera] = useState(false);
@@ -101,10 +104,10 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
       formData.append("image", blob, file_name);
       formData.append("name", photoType);
 
-      if(observations){
+      if (observations) {
         formData.append("description", observations);
       }
- 
+
 
       const response = await API_CREATE_ATTACHMENTS({
         formData,
@@ -155,7 +158,7 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
   // Confirmar remoção de foto
   const handleConfirmDelete = async () => {
     if (!photoToDelete) return;
-    
+
     try {
       setLoad(true);
       await API_DELETE_ATTACHMENTS({ token, deliveryAttachmentId: photoToDelete.id });
@@ -193,7 +196,7 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
             <div className="w-100">
               <h3 className="m-0 mt-2">Anexos</h3>
               <span className="text-muted mb-0">
-                {photos.length -1}/5
+                {photos.length - 1}/5
               </span>
             </div>
           </div>
@@ -226,7 +229,7 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
                     }}
                     onClick={() => handleOpenEdit(photo)}
                   />
-                  
+
                   {/* Informações da foto */}
                   <div className="flex-grow-1">
                     <h6 className="mb-1 fw-bold">{getPhotoTypeLabel(photo.type)}</h6>
@@ -253,7 +256,7 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
 
       {/* Botão adicionar foto */}
       {photos.length < 6 && (
-        <div className="text-center mt-3">
+        <div className="text-center mt-3 mb-5">
           <CustomButton
             loading={load}
             className="py-4"
@@ -265,8 +268,9 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
         </div>
       )}
 
+      <StepsIndicator steps={steps} currentStep={currentStep} />
       {/* Botões de ação */}
-      <div className="flex justify-between mt-4">
+      <div className="flex justify-between mt-5">
         <CustomButton
           loading={load}
           className="py-4"
@@ -364,16 +368,16 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <CustomButton 
-            theme="tertiary" 
-            label='Cancelar' 
+          <CustomButton
+            theme="tertiary"
+            label='Cancelar'
             handleClick={handleCloseDeleteModal}
             disable={load}
           />
-          <CustomButton 
+          <CustomButton
             theme="red"
-            variant="soft" 
-            label='Excluir' 
+            variant="soft"
+            label='Excluir'
             handleClick={handleConfirmDelete}
             loading={load}
           />

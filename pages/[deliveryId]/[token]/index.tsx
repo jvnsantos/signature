@@ -26,6 +26,16 @@ const DeliveryPage = () => {
   const [authorized, setAuthorized] = useState<boolean | null>(null);
   const [stepKey, setStepKey] = useState(0);
 
+
+
+  const steps = [
+    "Documentos",
+    "Recebedor",
+    "Anexos",
+    "Assinatura",
+  ];
+
+
   const validate = async () => {
     try {
       setShowHeader(false)
@@ -136,13 +146,10 @@ const DeliveryPage = () => {
           </div>
         );
 
-
-
-
       case 1:
         return (
           <div className="content-holder">
-            <ListPdfDocument handleNext={() => setCurrentStep(3)} />
+            <ListPdfDocument steps={steps} currentStep={currentStep} handleNext={() => setCurrentStep(3)} />
           </div>
         );
 
@@ -158,7 +165,7 @@ const DeliveryPage = () => {
       case 3:
         return (
           <div className="content-holder">
-            <ReceiverStep handleNext={() => setCurrentStep(4)} />
+            <ReceiverStep currentStep={currentStep} steps={steps} handleNext={() => setCurrentStep(4)} />
           </div>
         );
 
@@ -166,7 +173,7 @@ const DeliveryPage = () => {
       case 4:
         return (
           <div className="content-holder">
-            <DropAttachments deliveryId={deliveryId as string} handleNext={() => setCurrentStep(5)} />
+            <DropAttachments currentStep={currentStep} steps={steps} deliveryId={deliveryId as string} handleNext={() => setCurrentStep(5)} />
           </div>
         );
 
@@ -218,7 +225,12 @@ const DeliveryPage = () => {
   return (
     <Fragment>
       <div key={stepKey} className="step-transition">
-        {renderStepContent()}
+        <div className="content-holder">
+          {renderStepContent()}
+
+
+
+        </div>
       </div>
       <MapModal
         show={showMap}

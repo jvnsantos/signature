@@ -43383,6 +43383,37 @@ background-color: rgba(
   );
 }
 
+.steps-indicator {
+  display: flex;
+  justify-content: center; /* centraliza todos */
+  gap: 20px; /* espaço entre os bullets */
+  margin-bottom: 20px;
+}
+
+.step {
+  position: relative;
+  width: 10px;   /* tamanho do bullet */
+  height: 10px;  /* tamanho do bullet */
+  border-radius: 50%;
+  background-color: #6c757d; /* cor dos bullets inativos */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step.active {
+  background-color: var(--btn-fill-theme-primary-bg); /* cor do bullet ativo */
+}
+
+.step-label {
+  position: absolute;
+  top: 20px; /* abaixo do bullet */
+  white-space: nowrap;
+  font-weight: 500;
+  color:  var(--btn-fill-theme-primary-bg);
+}
+
+
 
 @keyframes spin {
   0% {

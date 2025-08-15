@@ -8,6 +8,7 @@ import trativeResponseUtils from "@/shared/utils/trative-response.utils";
 import { useState } from "react";
 import { Alert, Button, Carousel, Form, Modal } from "react-bootstrap";
 import CameraModal from "./camera-moda";
+import StepsIndicator from "@/shared/components/step-marker";
 
 // Tipos
 type Photo = {
@@ -19,10 +20,12 @@ type Photo = {
 };
 
 type Props = {
+  steps: string[];
+  currentStep: number;
   handleNext: () => void;
 };
 
-const ReceiverStep = ({ handleNext }: Props) => {
+const ReceiverStep = ({ handleNext, currentStep, steps }: Props) => {
   const { token, delivery, client } = useGlobalContext()
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [showCamera, setShowCamera] = useState(false);
@@ -259,7 +262,7 @@ const ReceiverStep = ({ handleNext }: Props) => {
 
       {/* Botão adicionar foto */}
 
-      <div className="text-center mt-3">
+      <div className="text-center mt-3 mb-5">
 
         {formControll?.document?.length < 14 || formControll?.fullName?.length < 6}
         <CustomButton
@@ -272,8 +275,11 @@ const ReceiverStep = ({ handleNext }: Props) => {
         />
       </div>
 
+
+      <StepsIndicator steps={steps} currentStep={currentStep} />
+
       {/* Botões de ação */}
-      <div className="flex justify-between mt-4">
+      {canProceed &&       <div className="flex justify-between mt-4 mt-5">
         <CustomButton
           loading={load}
           className="py-4"
@@ -281,7 +287,8 @@ const ReceiverStep = ({ handleNext }: Props) => {
           disable={!canProceed}
           label='Próximo'
         />
-      </div>
+      </div>}
+
 
       {/* Modal da câmera */}
       <CameraModal

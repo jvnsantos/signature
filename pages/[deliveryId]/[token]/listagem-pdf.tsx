@@ -4,11 +4,14 @@ import { useGlobalContext } from "@/shared/context/global-context"
 import { DocumentSvgElement } from "@/shared/svg-component"
 import { Fragment, useEffect, useState } from "react"
 import LoadingPage from "./loading"
+import StepsIndicator from "@/shared/components/step-marker"
 
 type Props = {
+  steps: string[];
+  currentStep: number;
   handleNext: () => void
 }
-const ListPdfDocument = ({ handleNext }: Props) => {
+const ListPdfDocument = ({ handleNext, currentStep, steps }: Props) => {
   const { invoice, setCurrentStep, setSelectedInvoice, setShowHeader } = useGlobalContext()
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(true)
@@ -18,6 +21,7 @@ const ListPdfDocument = ({ handleNext }: Props) => {
 
   const sortedPdfs = invoice ? [...invoice].sort((a, b) => a.ordering - b.ordering) : []
 
+  // Filtrar PDFs baseado no termo de busca
   const filteredPdfs = sortedPdfs.filter(pdf =>
     pdf.invoice.toLowerCase().includes(searchTerm.toLowerCase()) ||
     pdf.description.toLowerCase().includes(searchTerm.toLowerCase())
@@ -110,6 +114,7 @@ const ListPdfDocument = ({ handleNext }: Props) => {
                             </span>
                           </div>
 
+                          {/* Preview placeholder */}
                           <div
                             className="bg-light border rounded d-flex align-items-center justify-content-center mb-3"
                             style={{ height: '120px' }}
@@ -120,6 +125,7 @@ const ListPdfDocument = ({ handleNext }: Props) => {
                             </div>
                           </div>
 
+                          {/* Ações */}
                           <div className="mt-auto">
                             <CustomButton
                               handleClick={() => handleSelectPdf(pdf.invoice)}
@@ -138,8 +144,13 @@ const ListPdfDocument = ({ handleNext }: Props) => {
             </div>
           </div>
 
+          {/* Footer */}
+
+
+          <StepsIndicator steps={steps} currentStep={currentStep} />
+
           {filteredPdfs.length > 0 && (
-            <div className="row mt-4">
+            <div className="row mt-4 mt-5">
               <div className="col-12">
                 <CustomButton
                   handleClick={handleNext}
