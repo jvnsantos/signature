@@ -126,6 +126,13 @@ const DeliveryPage = () => {
                 title="Continuar"
               />
             </div>
+            <div className="mt-5">
+              <CustomButton
+                theme="tertiary"
+                label='Cliente não localizado?'
+                handleClick={() => { }}
+              />
+            </div>
           </div>
         );
 
