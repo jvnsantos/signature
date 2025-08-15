@@ -13,50 +13,32 @@ type Props = {
 
 const SignatureCollectStep = ({ handleNext }: Props) => {
   const { token, delivery, setFinalDocumentUrl } = useGlobalContext();
-  const { setShowHeader } = useGlobalContext()
+  const { setShowHeader } = useGlobalContext();
   const sigRef = useRef<SignatureCanvas>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
-  const [load, setLoad] = useState<boolean>(false)
-
+  const [load, setLoad] = useState(false);
   const [isLandscape, setIsLandscape] = useState(true);
-  const [canvasSize, setCanvasSize] = useState({ width: 300, height: 150 });
+  const [windowHeight, setWindowHeight] = useState(0);
+  const [windowWidth, setWindowWidth] = useState(0);
 
-  const checkOrientation = () => {
+  // Detecta orientação e tamanho da tela
+  const updateDimensions = () => {
     if (typeof window !== "undefined") {
-      const landscape = window.innerWidth > window.innerHeight;
-      setIsLandscape(landscape);
-
-
-      // Calcula tamanho do canvas baseado no container
-      if (containerRef.current) {
-        const containerWidth = containerRef.current.offsetWidth;
-        const containerHeight = containerRef.current.offsetHeight;
-
-        if (landscape) {
-          // ocupa quase toda a tela no horizontal
-          setCanvasSize({
-            width: containerWidth - 20,
-            height: containerHeight * 0.6, // 60% da altura
-          });
-        } else {
-          // tamanho padrão no vertical
-          setCanvasSize({ width: containerWidth - 20, height: 200 });
-        }
-      }
+      setIsLandscape(window.innerWidth > window.innerHeight);
+      setWindowHeight(window.innerHeight);
+      setWindowWidth(window.innerWidth);
     }
   };
 
   useEffect(() => {
-    setShowHeader(false)
-    checkOrientation();
-    window.addEventListener("resize", checkOrientation);
-    return () => {
-      window.removeEventListener("resize", checkOrientation);
-    };
-  }, [isLandscape]);
+    setShowHeader(false);
+    updateDimensions();
+    window.addEventListener("resize", updateDimensions);
+    return () => window.removeEventListener("resize", updateDimensions);
+  }, []);
 
   const clear = () => sigRef.current?.clear();
+
   const save = async () => {
     if (!sigRef.current || sigRef.current.isEmpty()) {
       console.error("Nenhuma assinatura capturada");
@@ -64,14 +46,11 @@ const SignatureCollectStep = ({ handleNext }: Props) => {
     }
 
     try {
-      setLoad(true)
+      setLoad(true);
       const base64Image = sigRef.current.toDataURL("image/png");
-
       const blob = await fetch(base64Image).then(res => res.blob());
-      const fileName = "signature.png";
-      console.log(base64Image)
       const formData = new FormData();
-      formData.append("image", blob, fileName);
+      formData.append("image", blob, "signature.png");
 
       const response = await API_CREATE_SIGNATURE({
         formData,
@@ -81,22 +60,18 @@ const SignatureCollectStep = ({ handleNext }: Props) => {
 
       trativeResponseUtils({
         response,
-        callBackError: (message) => {
-          console.error(message);
-        },
-        callBackSuccess: (response) => {
-          console.log(response.data)
-          setFinalDocumentUrl(response?.data?.urlSignatureCompleted)
+        callBackError: console.error,
+        callBackSuccess: (res) => {
+          setFinalDocumentUrl(res?.data?.urlSignatureCompleted);
           handleNext();
         },
       });
     } catch (err) {
       console.error("Erro ao salvar assinatura:", err);
     } finally {
-      setLoad(false)
+      setLoad(false);
     }
   };
-
 
   if (!isLandscape) {
     return (
@@ -107,44 +82,44 @@ const SignatureCollectStep = ({ handleNext }: Props) => {
     );
   }
 
+  // Calcula altura do canvas considerando header e botões
+  const headerHeight = 80;
+  const buttonsHeight = 100;
+  const canvasHeight = windowHeight - headerHeight - buttonsHeight - 40; // margem extra 40px
+  const canvasWidth = windowWidth - 40;
+
   return (
-    <div className="container-fluid p-3" ref={containerRef}>
-      <div className="row mb-4">
-        <div className="col-12">
-          <div className="d-flex h-25 align-items-start gap-3">
-            <SignatureSvgComponent style={{ height: '50px' }} />
-            <div className="w-100">
-              <h3 className="m-0 mt-2">Assinatura</h3>
-              <span className="text-muted mb-0">Assinatura do recebedor</span>
-            </div>
-          </div>
+    <div
+      className="d-flex flex-column align-items-center justify-between p-3"
+      style={{ height: windowHeight - headerHeight }}
+    >
+      <div className="d-flex align-items-center mb-3 w-100">
+        <SignatureSvgComponent style={{ height: 50 }} />
+        <div className="ms-2">
+          <h3 className="m-0">Assinatura</h3>
+          <span className="text-muted">Assinatura do recebedor</span>
         </div>
       </div>
 
-      <div>
-        <SignatureCanvas
-          ref={sigRef}
-          penColor="black"
-          canvasProps={{
-            width: canvasSize.width,
-            height: canvasSize.height,
-            className: "sigCanvas border rounded",
-          }}
-        />
-        <div className="mt-2">
-          <CustomButton theme="secundary" label="Limpar" handleClick={clear} />
-        </div>
-      </div>
+      <SignatureCanvas
+        ref={sigRef}
+        penColor="black"
+        canvasProps={{
+          width: canvasWidth,
+          height: canvasHeight,
+          className: "sigCanvas border rounded",
+        }}
+      />
 
-      <div className="flex justify-between mt-4">
+      <div className="d-flex justify-content-between mt-3 w-100">
+        <CustomButton theme="secundary" label="Limpar" handleClick={clear} />
         <CustomButton
           loading={load}
-          className="py-4"
+          label="Próximo"
           handleClick={() => {
             save();
-            setShowHeader(true)
+            setShowHeader(true);
           }}
-          label="Próximo"
         />
       </div>
     </div>
