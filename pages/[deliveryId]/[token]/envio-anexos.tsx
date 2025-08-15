@@ -1,17 +1,18 @@
 "use client";
+import { API_CREATE_ATTACHMENTS } from "@/pages/api/attachments/create-attachment.api";
+import { API_DELETE_ATTACHMENTS } from "@/pages/api/attachments/delete-attachments.api";
+import { API_GET_ATTACHMENTS } from "@/pages/api/attachments/get-attachments.api";
+import CustomButton from "@/shared/components/custom-button";
 import { useGlobalContext } from "@/shared/context/global-context";
+import { PicSvgElement } from "@/shared/svg-component";
+import trativeResponseUtils from "@/shared/utils/trative-response.utils";
 import { useEffect, useState } from "react";
 import { Alert, Button, Carousel, Form, Modal } from "react-bootstrap";
 import CameraModal from "./camera-moda";
-import CustomButton from "@/shared/components/custom-button";
-import { PicSvgElement } from "@/shared/svg-component";
-import { API_GET_ATTACHMENTS } from "@/pages/api/attachments/get-attachments.api";
-import { API_CREATE_ATTACHMENTS } from "@/pages/api/attachments/create-attachment.api";
-import trativeResponseUtils from "@/shared/utils/trative-response.utils";
 
 // Tipos
 type Photo = {
-  id: number;
+  id: string;
   image: string;
   description: string;
   type: string;
@@ -34,26 +35,27 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
   const [observations, setObservations] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function loadAttachments() {
-      try {
-        const response = await API_GET_ATTACHMENTS({ deliveryId, token });
-        const mappedPhotos: Photo[] = response.filter(e => e.name !== 'RECEIVER_DELIVERY').map((att: any) => {
-          console.log({ att })
-          return ({
-            id: Number(att.deliveryAttachmentId),
-            image: att.urlAttachment,
-            description: att.description,
-            type: att.name || "",
-            observations: att.observations || "",
-          })
-        }
-        );
-        setPhotos(mappedPhotos);
-      } catch (error) {
-        console.error("Erro ao carregar anexos:", error);
+
+  async function loadAttachments() {
+    try {
+      const response = await API_GET_ATTACHMENTS({ deliveryId, token });
+      const mappedPhotos: Photo[] = response.filter(e => e.name !== 'RECEIVER_DELIVERY').map((att: any) => {
+        return ({
+          id: att.deliveryAttachmentId,
+          image: att.urlAttachment,
+          description: att.description,
+          type: att.name || "",
+          observations: att.observations || "",
+        })
       }
+      );
+      setPhotos(mappedPhotos);
+    } catch (error) {
+      console.error("Erro ao carregar anexos:", error);
     }
+  }
+
+  useEffect(() => {
     loadAttachments();
   }, [deliveryId, API_GET_ATTACHMENTS]);
 
@@ -76,59 +78,42 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
         setError("Preencha todos os campos obrigatórios");
         return;
       }
-
       const description = photoType + (observations ? ` - ${observations}` : "");
-      const existingIndex = photos.findIndex((p) => p.image === currentPhoto);
 
+      const base64Image = currentPhoto;
+      const file_name = `${photoType}.jpg`;
 
-      if (existingIndex !== -1) {
-        const updated = [...photos];
-        updated[existingIndex] = {
-          ...updated[existingIndex],
-          description,
-          type: photoType,
-          observations,
-        };
+      const blob = await fetch(base64Image).then(res => res.blob());
 
-        setPhotos(updated);
-      } else {
+      const formData = new FormData();
+      formData.append("image", blob, file_name);
+      formData.append("name", photoType);
+      formData.append("description", description);
 
+      const response = await API_CREATE_ATTACHMENTS({
+        formData,
+        token,
+        deliveryId: delivery.id
+      });
 
-        const base64Image = currentPhoto;
-        const file_name = `${photoType}.jpg`;
-
-        const blob = await fetch(base64Image).then(res => res.blob());
-
-        const formData = new FormData();
-        formData.append("image", blob, file_name);
-        formData.append("name", photoType);
-        formData.append("description", description);
-
-        const response = await API_CREATE_ATTACHMENTS({
-          formData,
-          token,
-          deliveryId: delivery.id
-        });
-
-        trativeResponseUtils({
-          response,
-          callBackError: (message) => { setError(message) },
-          callBackSuccess: () => { }
-        })
-
-        setPhotos((prev) => [
-          ...prev,
-          {
-            id: Date.now(),
-            image: currentPhoto,
-            description,
-            type: photoType,
-            observations,
-          },
-        ]);
-      }
-
-
+      trativeResponseUtils({
+        response,
+        callBackError: (message) => { setError(message) },
+        callBackSuccess: (response) => {
+          const data = response.data
+          console.log('DATAAA', data)
+          setPhotos((prev) => [
+            ...prev,
+            {
+              id: data?.id,
+              image: currentPhoto,
+              description,
+              type: photoType,
+              observations,
+            },
+          ]);
+        }
+      })
 
       handleCloseModal();
     } catch (error) {
@@ -150,8 +135,13 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
   };
 
   // Remover foto
-  const handleRemovePhoto = (photoId: number) => {
-    setPhotos((prev) => prev.filter((p) => p.id !== photoId));
+  const handleRemovePhoto = async (photo: Photo) => {
+    try {
+      await API_DELETE_ATTACHMENTS({ token, deliveryAttachmentId: photo.id })
+      await loadAttachments()
+    } catch (error) {
+      console.error(error)
+    }
   };
 
   const handleCloseModal = () => {
@@ -210,7 +200,7 @@ const PhotoCollector = ({ handleNext, deliveryId }: Props) => {
                 size="sm"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleRemovePhoto(photo.id);
+                  handleRemovePhoto(photo);
                 }}
               >
                 Deletar
