@@ -11,16 +11,15 @@ type Props = {
   currentStep: number;
   handleNext: () => void
 }
+
 const ListPdfDocument = ({ handleNext, currentStep, steps }: Props) => {
   const { invoice, setCurrentStep, setSelectedInvoice, setShowHeader } = useGlobalContext()
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(true)
-
-
   const [, setErrorViewer] = useState<string | null>(null)
 
   const sortedPdfs = invoice ? [...invoice].sort((a, b) => a.ordering - b.ordering) : []
-
+  
   // Filtrar PDFs baseado no termo de busca
   const filteredPdfs = sortedPdfs.filter(pdf =>
     pdf.invoice.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -36,9 +35,11 @@ const ListPdfDocument = ({ handleNext, currentStep, steps }: Props) => {
 
   useEffect(() => {
     setShowHeader(false)
-    setTimeout(() => { setLoading(false); setShowHeader(true) }, 2500)
+    setTimeout(() => {
+      setLoading(false);
+      setShowHeader(true)
+    }, 2500)
   }, [])
-
 
   if (loading) {
     return <LoadingPage />
@@ -46,14 +47,15 @@ const ListPdfDocument = ({ handleNext, currentStep, steps }: Props) => {
 
   if (!invoice || invoice.length === 0) {
     return (
-      <div className="d-flex flex-column align-items-center justify-content-center text-center" style={{ minHeight: '400px' }}>
+      <div className="d-flex flex-column align-items-center justify-content-center text-center" 
+           style={{ minHeight: '400px' }}>
         <i className="bi bi-file-earmark-pdf mb-3" style={{ fontSize: '4rem', color: '#6c757d' }}></i>
         <h3>Nenhum PDF encontrado</h3>
         <p className="text-muted mb-4">Não há documentos PDF disponíveis para visualização</p>
-        <CustomButton
-          handleClick={handleNext}
-          label={<>Continuar</>}
-          title="Próximo passo"
+        <CustomButton 
+          handleClick={handleNext} 
+          label={<>Continuar</>} 
+          title="Próximo passo" 
         />
       </div>
     )
@@ -78,84 +80,121 @@ const ListPdfDocument = ({ handleNext, currentStep, steps }: Props) => {
             </div>
           </div>
 
-          <div className="row">
+          {/* Search Bar */}
+          <div className="row mb-3">
+            <div className="col-12">
+              <div className="input-group">
+                <span className="input-group-text">
+                  <i className="bi bi-search"></i>
+                </span>
+                <input
+                  type="text"
+                  className="form-control mt-0"
+                  placeholder="Pesquisar documentos..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                {searchTerm && (
+                  <button
+                    className="btn btn-outline-secondary"
+                    onClick={() => setSearchTerm('')}
+                  >
+                    <i className="bi bi-x"></i>
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="row mb-5">
             <div className="col-12">
               {filteredPdfs.length === 0 && searchTerm ? (
                 <div className="text-center py-5">
                   <i className="bi bi-search mb-3" style={{ fontSize: '3rem', color: '#6c757d' }}></i>
                   <h4>Nenhum resultado encontrado</h4>
                   <p className="text-muted">Tente buscar por outro termo ou limpe o filtro</p>
-                  <button
-                    className="btn btn-outline-secondary"
+                  <button 
+                    className="btn btn-outline-secondary" 
                     onClick={() => setSearchTerm('')}
                   >
                     Limpar busca
                   </button>
                 </div>
               ) : (
-                <div className="row">
-                  {filteredPdfs.map((pdf) => (
-                    <div key={pdf.invoice} className="col-lg-4 col-md-6 mb-4">
-                      <div className="card h-100 shadow-sm border-0 drop-shadow">
-                        <div className="card-body d-flex flex-column">
-                          {/* Header do card */}
-                          <div className="d-flex justify-content-between align-items-start mb-3">
-                            <div className="flex-grow-1">
-                              <h5 className="card-title mb-1 text-gray-900">
-                                <i className="bi bi-file-earmark-pdf me-2"></i>
+                <div className="border rounded bg-white">
+                  {/* Header da lista - estilo Windows Explorer */}
+                  <div className="border-bottom bg-light px-3 py-2">
+                    <div className="row align-items-center fw-semibold text-muted small g-0">
+                      <div className="col-11">
+                        <i className="bi bi-list-ul me-2"></i>Nome
+                      </div>
+                      <div className="col-1 text-center">Ações</div>
+                    </div>
+                  </div>
+
+                  {/* Lista de documentos - estilo Windows Explorer */}
+                  <div className="list-group list-group-flush">
+                    {filteredPdfs.map((pdf, index) => (
+                      <div
+                        key={pdf.invoice}
+                        className={`list-group-item list-group-item-action border-0 px-3 py-2 ${
+                          index % 2 === 0 ? 'bg-light bg-opacity-25' : ''
+                        }`}
+                        style={{ cursor: 'pointer' }}
+                        onDoubleClick={() => handleSelectPdf(pdf.invoice)}
+                      >
+                        <div className="row align-items-center g-0">
+                          {/* Ícone + Nome do arquivo */}
+                          <div className="col-11 d-flex align-items-center">
+                            <div className="d-flex align-items-center flex-shrink-0 me-3">
+                              <i 
+                                className="bi bi-file-earmark-pdf text-danger" 
+                                style={{ fontSize: '1.5rem' }}
+                              ></i>
+                            </div>
+                            <div className="flex-grow-1 min-width-0">
+                              <div className="fw-medium text-dark text-truncate">
                                 {pdf.invoice}
-                              </h5>
-                              <p className="card-text text-muted mb-0 small">
+                              </div>
+                              <div className="small text-muted text-truncate">
                                 {pdf.description}
-                              </p>
-                            </div>
-                            <span className="badge text-muted ms-2">
-                              #{pdf.ordering}
-                            </span>
-                          </div>
-
-                          {/* Preview placeholder */}
-                          <div
-                            className="bg-light border rounded d-flex align-items-center justify-content-center mb-3"
-                            style={{ height: '120px' }}
-                          >
-                            <div className="text-center">
-                              <i className="bi bi-file-earmark-pdf text-muted" style={{ fontSize: '2.5rem' }}></i>
-                              <div className="small text-muted mt-1">Documento PDF</div>
+                              </div>
                             </div>
                           </div>
 
-                          {/* Ações */}
-                          <div className="mt-auto">
-                            <CustomButton
-                              handleClick={() => handleSelectPdf(pdf.invoice)}
-                              title="Visualizar documento"
-                              label="Visualizar documento"
-                              theme="secundary"
-                              icon={<i className="bi bi-eye me-1"></i>}
-                            />
+                          {/* Ícone de detalhes/ações */}
+                          <div className="col-1 text-center">
+                            <button
+                              className="btn btn-outline-secondary btn-sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSelectPdf(pdf.invoice);
+                              }}
+                              title="Ver detalhes"
+                              style={{ minWidth: '32px', minHeight: '32px' }}
+                            >
+                              <i className="bi bi-eye" style={{ fontSize: '0.9rem' }}></i>
+                            </button>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
           </div>
 
           {/* Footer */}
-
-
           <StepsIndicator steps={steps} currentStep={currentStep} />
-
+          
           {filteredPdfs.length > 0 && (
             <div className="row mt-4 mt-5">
               <div className="col-12">
-                <CustomButton
-                  handleClick={handleNext}
-                  label={<>Avançar</>}
-                  title="Próximo passo"
+                <CustomButton 
+                  handleClick={handleNext} 
+                  label={<>Avançar</>} 
+                  title="Próximo passo" 
                 />
               </div>
             </div>
@@ -164,8 +203,6 @@ const ListPdfDocument = ({ handleNext, currentStep, steps }: Props) => {
       </Fragment>
     )
   }
-
-
 }
 
 export default ListPdfDocument
