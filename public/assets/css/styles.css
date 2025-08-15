@@ -5592,8 +5592,8 @@ progress {
   --bs-gutter-x: 1.5rem;
   --bs-gutter-y: 0;
   width: 100%;
-  padding-inline-end: calc(var(--bs-gutter-x) * 0.5);
-  padding-inline-start: calc(var(--bs-gutter-x) * 0.5);
+  /* padding-inline-end: calc(var(--bs-gutter-x) * 0.5);
+  padding-inline-start: calc(var(--bs-gutter-x) * 0.5); */
   margin-inline-end: auto;
   margin-inline-start: auto;
 }
@@ -43275,7 +43275,11 @@ input[type="number"] {
   color: #f2f2f2 !important;
 }
 .linear-header-bg {
-  background: linear-gradient(to right, var(--primary-color) 0%, #1a5adb 100%);
+ height: 80px;
+  display: flex;
+  align-items: center;
+  background-color: #FFFFFF;
+  filter: drop-shadow(1px 1px 1px rgba(248, 250, 244, 0.02));
 }
 .text-wrap{
    text-wrap: wrap;
@@ -43364,6 +43368,12 @@ color: white
 .new-input:focus + .new-input-label::after,
 .new-input:valid + .new-input-label::after {
   transform: translateX(0%);
+}
+
+.content-holder{
+  padding: 16px;
+  background-color: #fff;
+ 
 }
 
 .sigCanvas{

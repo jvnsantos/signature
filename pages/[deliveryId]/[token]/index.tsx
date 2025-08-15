@@ -1,5 +1,6 @@
 // /pages/[deliveryId]/[token]/index.tsx
 'use client'
+import { API_GET_DELIVERY } from "@/pages/api/delivery/get-delivery.api";
 import CustomButton from "@/shared/components/custom-button";
 import LoadingPage from "@/shared/components/loading-page";
 import MapModal from "@/shared/components/map-modal";
@@ -8,15 +9,14 @@ import RedirectUnauthorized from "@/shared/utils/redirect-unauthorized.util";
 import trativeResponseUtils from "@/shared/utils/trative-response.utils";
 import { useRouter } from "next/router";
 import { Fragment, useEffect, useState } from "react";
-import { Card, Col, Row } from "react-bootstrap";
-import DriverGeolocalization from "./localizacao-motorista";
-import ListPdfDocument from "./listagem-pdf";
-import DropAttachments from "./envio-anexos";
+import { Col } from "react-bootstrap";
 import SignatureCollect from "./assinatura";
+import DropAttachments from "./envio-anexos";
+import FinishViwer from "./finish";
+import ListPdfDocument from "./listagem-pdf";
+import DriverGeolocalization from "./localizacao-motorista";
 import RenderPdfViewer from "./pdf-viewer";
 import ReceiverStep from "./recebedor";
-import { API_GET_DELIVERY } from "@/pages/api/delivery/get-delivery.api";
-import FinishViwer from "./finish";
 
 const DeliveryPage = () => {
   const router = useRouter();
@@ -47,11 +47,11 @@ const DeliveryPage = () => {
             return
           }
 
-            if (data.delivery.status !== 'PENDING') {
+          if (data.delivery.status !== 'PENDING') {
             router.replace("/invalida");
             return
           }
-   
+
           setInvoice(data.invoices)
           setCompany(data.company)
           setDelivery(data.delivery)
@@ -71,64 +71,62 @@ const DeliveryPage = () => {
     switch (currentStep) {
       case 0:
         return (
-          <Card className="shadow-light">
-            <Card.Body>
-              <Row className="text-center">
-                <Col>
-                  <h4 className="fs-4 ">Bem-vindo!</h4>
-                  <span className="fs-6 text-muted">Vamos iniciar o processo de entrega</span>
-                </Col>
-              </Row>
+          <div className="content-holder">
+            <div className="text-center bg-white">
+              <Col>
+                <h4 className="fs-4 ">Bem-vindo!</h4>
+                <span className="fs-6 text-muted">Vamos iniciar o processo de entrega</span>
+              </Col>
+            </div>
 
-              <Row className="my-4">
-                <Col>
-                  <div className="after-green px-3 py-2">
-                    <h5 className="m-0">{company?.name?.toUpperCase()}</h5>
-                    <span className="text-muted">Empresa responsável</span>
-                  </div>
-                </Col>
-              </Row>
+            <div className="my-4">
+              <Col>
+                <div className="after-green px-3 py-2">
+                  <h5 className="m-0">{company?.name?.toUpperCase()}</h5>
+                  <span className="text-muted">Empresa responsável</span>
+                </div>
+              </Col>
+            </div>
 
-              <Row className="my-4">
-                <Col>
-                  <div className="after-blue px-3 py-2">
-                    <h5 className="m-0">{client?.name}</h5>
-                    <span className="text-muted">Cliente destinatário</span>
-                  </div>
-                </Col>
-              </Row>
+            <div className="my-4">
+              <Col>
+                <div className="after-blue px-3 py-2">
+                  <h5 className="m-0">{client?.name}</h5>
+                  <span className="text-muted">Cliente destinatário</span>
+                </div>
+              </Col>
+            </div>
 
-              <div className="d-flex flex-row gap-2">
-                <i className="bi bi-geo-alt fs-5 text-primary"></i>
-                <Row>
-                  <h5 className="pt-1">Endereço da entrega</h5>
-                  <span className="text-muted">{client?.address?.street}, {client?.address?.number ?? 'S/N'}</span>
-                  <span className="text-muted">{client?.address?.neighborhood}, {client?.address?.city}/{client?.address?.state}</span>
-                  <span className="text-muted">CEP: {client?.address?.postalCode}</span>
-                </Row>
+            <div className="d-flex flex-div gap-2">
+              <i className="bi bi-geo-alt fs-5 text-primary"></i>
+              <div>
+                <h5 className="pt-1">Endereço da entrega</h5>
+                <span className="text-muted">{client?.address?.street}, {client?.address?.number ?? 'S/N'}</span>
+                <span className="text-muted">{client?.address?.neighborhood}, {client?.address?.city}/{client?.address?.state}</span>
+                <span className="text-muted">CEP: {client?.address?.postalCode}</span>
               </div>
+            </div>
 
-              <div className="mt-4 d-flex w-100 justify-content-center align-items-center gap-3">
-                <CustomButton
-                  className="shadow-light"
-                  size="l"
-                  handleClick={() => setShowMap(true)}
-                  label={'Ver no mapa'}
-                  title="Ver no mapa"
-                  icon={<i className=" fs-6 bi bi-geo"></i>}
-                  theme="secundary"
-                />
+            <div className="mt-4 d-flex w-100 justify-content-center align-items-center gap-3">
+              <CustomButton
+                className="shadow-light"
+                size="l"
+                handleClick={() => setShowMap(true)}
+                label={'Ver no mapa'}
+                title="Ver no mapa"
+                icon={<i className=" fs-6 bi bi-geo"></i>}
+                theme="secundary"
+              />
 
-                <CustomButton
-                  className="shadow-light"
-                  size="l"
-                  handleClick={() => setCurrentStep(1)}
-                  label={'Continuar'}
-                  title="Continuar"
-                />
-              </div>
-            </Card.Body>
-          </Card>
+              <CustomButton
+                className="shadow-light"
+                size="l"
+                handleClick={() => setCurrentStep(1)}
+                label={'Continuar'}
+                title="Continuar"
+              />
+            </div>
+          </div>
         );
 
 
@@ -136,74 +134,59 @@ const DeliveryPage = () => {
 
       case 1:
         return (
-          <Card className="shadow-light">
-            <Card.Body>
-              <ListPdfDocument handleNext={() => setCurrentStep(3)} />
-            </Card.Body>
-          </Card>
+          <div className="content-holder">
+            <ListPdfDocument handleNext={() => setCurrentStep(3)} />
+          </div>
         );
 
 
       case 2:
         return (
-          <Card className="shadow-light p-0">
-            <Card.Body className="p-0">
-              {/* Volta para o 2*** */}
-              <RenderPdfViewer handleBack={() => setCurrentStep(1)} />
-            </Card.Body>
-          </Card>
+          <div className="content-holder">
+            <RenderPdfViewer handleBack={() => setCurrentStep(1)} />
+          </div>
         );
 
 
       case 3:
         return (
-          <Card className="shadow-light ">
-            <Card.Body className="">
-              {/* Volta para o 2*** */}
-              <ReceiverStep handleNext={() => setCurrentStep(4)} />
-            </Card.Body>
-          </Card>
+          <div className="content-holder">
+            <ReceiverStep handleNext={() => setCurrentStep(4)} />
+          </div>
         );
 
 
       case 4:
         return (
-          <Card className="shadow-light p-0">
-            <Card.Body className="p-0">
-              <DropAttachments deliveryId={deliveryId as string} handleNext={() => setCurrentStep(5)} />
-            </Card.Body>
-          </Card>
+          <div className="content-holder">
+            <DropAttachments deliveryId={deliveryId as string} handleNext={() => setCurrentStep(5)} />
+          </div>
         );
 
 
 
       case 5:
         return (
-          <Card className="shadow-light">
-            <Card.Body>
-              <DriverGeolocalization handleNext={() => setCurrentStep(6)} />
-            </Card.Body>
-          </Card>
+          <div className="content-holder">
+            <DriverGeolocalization handleNext={() => setCurrentStep(6)} />
+          </div>
+
         );
 
 
       case 6:
         return (
-          <Card className="shadow-light">
-            <Card.Body>
-              <SignatureCollect handleNext={() => setCurrentStep(7)} />
-            </Card.Body>
-          </Card>
+          <div className="content-holder">
+            <SignatureCollect handleNext={() => setCurrentStep(7)} />
+          </div>
         );
 
 
       case 7:
         return (
-          <Card className="shadow-light p-0">
-            <Card.Body className="p-0">
-              <FinishViwer />
-            </Card.Body>
-          </Card>
+          <div className="content-holder">
+            <FinishViwer />
+          </div>
         );
       default:
         return null;

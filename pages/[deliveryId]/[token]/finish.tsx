@@ -23,7 +23,7 @@ const FinishViwer = () => {
       <div
         className="pdf-viewer-container"
         style={{
-          height: 'calc(100vh - 100px)',
+          height: 'calc(100vh)',
           border: '1px solid #dee2e6',
           borderRadius: '0.375rem',
           backgroundColor: '#f8f9fa',
@@ -31,8 +31,6 @@ const FinishViwer = () => {
           overflow: 'hidden'
         }}
       >
-        <h2>Entrega confirmada</h2>
-
         {isLoadingViewer && (
           <div className="position-absolute top-50 start-50 translate-middle">
             <div className="d-flex flex-column align-items-center">

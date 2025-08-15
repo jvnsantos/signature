@@ -8,11 +8,15 @@ const Header = () => {
 
   if (!showHeader) return
   return (
-    <header className="app-header linear-header-bg">
+    <header className="linear-header-bg shadow-light">
       <div className="main-header-container container-fluid">
-        <div className="d-flex flex-column text-center w-100 py-4">
-          <h2 className="mb-1 f2f2f2">Assinatura Digital</h2>
-          <span className="f2f2f2"> Sistema de entrega</span>
+        <div className="d-flex flex-column align-items-center justify-content-center text-center w-100 py-4">
+          <img
+            src="/assets/images/brand-logos/logo-header.svg"
+            alt=""
+            className="img-fluid mx-auto"
+            style={{ maxWidth: "200px" }}
+          />
         </div>
       </div>
     </header>
