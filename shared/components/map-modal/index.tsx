@@ -1,4 +1,6 @@
-import React from "react";
+// /shared/components/map-modal.tsx
+'use client';
+
 import { Modal } from "react-bootstrap";
 
 interface MapModalProps {
@@ -6,37 +8,35 @@ interface MapModalProps {
   onClose: () => void;
   latitude: number;
   longitude: number;
+  zoom?: number;
+  width?: number;
+  height?: number;
 }
 
-const MapModal: React.FC<MapModalProps> = ({ show, onClose, latitude, longitude }) => {
-  const bboxOffset = 0.005; // margem ao redor do marcador
+const MapModal = ({
+  show,
+  onClose,
+  latitude,
+  longitude,
+  zoom = 16,
+  width = 800,
+  height = 450
+}: MapModalProps) => {
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY as string;
 
-  const bbox = [
-    longitude - bboxOffset,
-    latitude - bboxOffset,
-    longitude + bboxOffset,
-    latitude + bboxOffset,
-  ]
-    .map(coord => coord.toFixed(6))
-    .join("%2C");
-
-  const marker = `${latitude.toFixed(6)}%2C${longitude.toFixed(6)}`;
-
-  const mapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${marker}`;
+  const staticMapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${latitude},${longitude}&zoom=${zoom}&size=${width}x${height}&maptype=roadmap&markers=color:red|${latitude},${longitude}&key=${apiKey}`;
 
   return (
-    <Modal show={show} onHide={onClose}  centered>
+    <Modal show={show} onHide={onClose} centered size="lg">
       <Modal.Header closeButton>
-        <Modal.Title>Localização da Entrega</Modal.Title>
+        <Modal.Title>Localização no Mapa</Modal.Title>
       </Modal.Header>
-      <Modal.Body style={{ padding: 0 }}>
-        <iframe
-          src={mapUrl}
-          width="100%"
-          height="100%"
-          style={{ border: "none", minHeight: "400px" }}
-          loading="lazy"
-        ></iframe>
+      <Modal.Body className="p-0">
+        <img
+          src={staticMapUrl}
+          alt="Mapa estático com marcador"
+          style={{ width: "100%", height: "auto" }}
+        />
       </Modal.Body>
     </Modal>
   );
